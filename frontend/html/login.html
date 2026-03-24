@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | V Meal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FC8019",
+                        "primary-dark": "#984800",
+                        "background": "#f9f9f9",
+                        "surface": "#ffffff",
+                        "surface-low": "#f3f3f4",
+                        "surface-container": "#eeeeee",
+                        "on-surface": "#1a1c1c",
+                        "on-surface-variant": "#574236",
+                        "outline": "#E9E9EB",
+                        "secondary-text": "#686B78",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .kinetic-gradient { background: linear-gradient(135deg, #984800 0%, #FC8019 100%); }
+        body { font-family: 'Inter', sans-serif; min-height: 100dvh; }
+    </style>
+</head>
+<body class="bg-surface-low text-on-surface antialiased">
+
+<header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-outline">
+    <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+        <div class="flex items-center gap-2">
+            <img src="1766987781692.png" class="h-8 w-auto" alt="V Meal"/>
+        </div>
+        <div class="hidden md:flex gap-6 text-sm font-medium text-secondary-text">
+            <a href="aboutus.html" class="hover:text-primary transition-colors">About Us</a>
+        </div>
+    </div>
+</header>
+
+<main class="min-h-screen flex flex-col md:flex-row items-stretch pt-16">
+    <!-- Brand Side -->
+    <div class="hidden md:flex md:w-1/2 lg:w-3/5 bg-surface-low relative overflow-hidden items-center justify-center p-12 lg:p-24">
+        <div class="relative z-10 max-w-xl">
+            <img src="1766987781692.png" class="h-20 w-auto mb-8" alt="V Meal"/>
+            <h1 class="text-5xl lg:text-6xl font-extrabold tracking-tighter text-on-surface mb-6 leading-tight">
+                Elevating the <span class="text-primary italic">Campus</span> Food Experience.
+            </h1>
+            <p class="text-lg text-on-surface-variant font-medium mb-12 max-w-md">
+                Fresh, hot, and curated meals ready when you are.
+            </p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-outline">
+                    <span class="material-symbols-outlined text-primary mb-3 block">timer</span>
+                    <h3 class="font-bold text-lg">Fast Track</h3>
+                    <p class="text-sm text-secondary-text">Average 30min delivery across campus.</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-outline">
+                    <span class="material-symbols-outlined text-primary mb-3 block">verified</span>
+                    <h3 class="font-bold text-lg">Hygienic</h3>
+                    <p class="text-sm text-secondary-text">Every partner is certified & vetted.</p>
+                </div>
+            </div>
+        </div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Login Form Side -->
+    <div class="flex-1 flex flex-col justify-center px-6 py-12 lg:px-20 xl:px-32 bg-white">
+        <div class="w-full max-w-md mx-auto">
+            <div class="mb-10">
+                <h2 class="text-3xl font-extrabold tracking-tight text-on-surface mb-2">Welcome to V Meal</h2>
+                <p class="text-secondary-text">Sign in to your account to continue</p>
+            </div>
+
+            <!-- Role Selector -->
+            <div class="flex p-1 bg-surface-container rounded-xl mb-8" id="role-selector">
+                <button class="role-btn flex-1 py-2.5 text-sm font-semibold bg-white text-primary rounded-lg shadow-sm border border-outline transition-all" data-role="student">Student / Faculty</button>
+                <button class="role-btn flex-1 py-2.5 text-sm font-medium text-secondary-text hover:text-on-surface transition-colors" data-role="restaurant">Restaurant</button>
+                <button class="role-btn flex-1 py-2.5 text-sm font-medium text-secondary-text hover:text-on-surface transition-colors" data-role="admin">Admin</button>
+            </div>
+
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Email Address</label>
+                    <input type="email" id="email" placeholder="yourname@vitstudent.ac.in" required
+                        class="w-full px-4 py-4 bg-surface-low border border-outline rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-on-surface placeholder:text-secondary-text/50 font-medium transition-all"/>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text">Password</label>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="password" placeholder="••••••••" required
+                            class="w-full px-4 py-4 bg-surface-low border border-outline rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-on-surface placeholder:text-secondary-text/50 font-medium transition-all"/>
+                        <button type="button" id="togglePwd" class="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text">
+                            <span class="material-symbols-outlined text-xl">visibility</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full kinetic-gradient text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        Sign In
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </button>
+                </div>
+            </form>
+
+            <p class="mt-8 text-center text-secondary-text text-sm">
+                New to V Meal? <a href="signup.html" class="text-primary font-bold hover:underline">Create an account</a>
+            </p>
+            <p id="errorMsg" class="mt-4 text-center text-red-500 text-sm font-medium hidden"></p>
+
+            <footer class="mt-12 text-center">
+                <p class="text-[10px] uppercase tracking-widest font-bold text-secondary-text/60">© 2026 VMeal. Crafted with care for campus cravings.</p>
+            </footer>
+        </div>
+    </div>
+</main>
+
+<script src="js/utils.js"></script>
+<script>
+    let selectedRole = 'student';
+
+    document.querySelectorAll('.role-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedRole = btn.dataset.role;
+            document.querySelectorAll('.role-btn').forEach(b => {
+                b.classList.remove('bg-white', 'text-primary', 'shadow-sm', 'border', 'border-outline', 'font-semibold');
+                b.classList.add('text-secondary-text', 'font-medium');
+            });
+            btn.classList.add('bg-white', 'text-primary', 'shadow-sm', 'border', 'border-outline', 'font-semibold');
+            btn.classList.remove('text-secondary-text', 'font-medium');
+        });
+    });
+
+    document.getElementById('togglePwd').addEventListener('click', () => {
+        const pwd = document.getElementById('password');
+        const icon = document.querySelector('#togglePwd span');
+        pwd.type = pwd.type === 'password' ? 'text' : 'password';
+        icon.textContent = pwd.type === 'password' ? 'visibility' : 'visibility_off';
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const errMsg = document.getElementById('errorMsg');
+        errMsg.classList.add('hidden');
+
+        try {
+            const res = await fetch(`${API}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                localStorage.setItem('user_id', data.user_id);
+                localStorage.setItem('user_name', data.name);
+                localStorage.setItem('user_role', data.role);
+                localStorage.setItem('restaurant_id', data.restaurant_id || '');
+                window.location.href = data.dashboard;
+            } else {
+                errMsg.textContent = data.message;
+                errMsg.classList.remove('hidden');
+            }
+        } catch {
+            errMsg.textContent = 'Cannot reach server. Is Flask running?';
+            errMsg.classList.remove('hidden');
+        }
+    });
+</script>
+</body>
+</html>

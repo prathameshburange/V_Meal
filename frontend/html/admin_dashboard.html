@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | V Meal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: {
+                "primary": "#FC8019", "background": "#ffffff", "surface": "#F8F8F8",
+                "surface-container": "#eeeeee", "on-surface": "#1a1c1c",
+                "outline": "#E9E9EB", "secondary-text": "#686B78",
+                "success": "#60B246", "error-red": "#D83C3C",
+            }}}
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .sidebar-link.active { background: #FC8019; color: white; }
+        .sidebar-link.active .material-symbols-outlined { color: white; }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="flex min-h-screen bg-background text-on-surface">
+
+<!-- SIDEBAR -->
+<aside class="flex flex-col h-screen w-[240px] border-r border-outline bg-surface sticky top-0">
+    <div class="p-5 border-b border-outline">
+        <img src="1766987781692.png" class="h-8 w-auto" alt="V Meal"/>
+    </div>
+    <nav class="flex-1 space-y-1 px-3 py-4">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard"
+            class="sidebar-link active w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm text-white transition-all">
+            <span class="material-symbols-outlined">dashboard</span> Dashboard
+        </button>
+        <button onclick="switchTab('users')" id="nav-users"
+            class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm text-secondary-text hover:bg-surface-container transition-all">
+            <span class="material-symbols-outlined">group</span> Users
+        </button>
+        <button onclick="switchTab('restaurants')" id="nav-restaurants"
+            class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm text-secondary-text hover:bg-surface-container transition-all">
+            <span class="material-symbols-outlined">storefront</span> Restaurants
+        </button>
+        <button onclick="switchTab('dishes')" id="nav-dishes"
+            class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm text-secondary-text hover:bg-surface-container transition-all">
+            <span class="material-symbols-outlined">flatware</span> Dishes
+        </button>
+        <button onclick="switchTab('support')" id="nav-support"
+            class="sidebar-link w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 font-semibold text-sm text-secondary-text hover:bg-surface-container transition-all">
+            <span class="material-symbols-outlined">support_agent</span> Support
+        </button>
+    </nav>
+    <div class="p-4 border-t border-outline">
+        <button onclick="logout()" class="w-full flex items-center gap-2 text-sm text-secondary-text hover:text-error-red transition-colors font-medium px-2 py-2 rounded-lg hover:bg-red-50">
+            <span class="material-symbols-outlined text-base">logout</span> Logout
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="flex-1 min-w-0 bg-white">
+    <header class="h-16 border-b border-outline flex items-center justify-between px-8 sticky top-0 bg-white/85 backdrop-blur z-10">
+        <h2 class="text-lg font-bold" id="tabTitle">Dashboard Overview</h2>
+        <div class="flex items-center gap-3">
+            <span class="text-xs text-secondary-text font-semibold">Admin Panel</span>
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-base">admin_panel_settings</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="p-8">
+
+        <!-- DASHBOARD TAB -->
+        <div class="tab-content active space-y-6" id="tab-dashboard">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="bg-surface p-6 rounded-2xl border border-outline border-l-4 border-l-primary">
+                    <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Total Users</p>
+                    <p class="text-3xl font-black" id="stat-users">—</p>
+                </div>
+                <div class="bg-surface p-6 rounded-2xl border border-outline border-l-4 border-l-success">
+                    <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Restaurants</p>
+                    <p class="text-3xl font-black" id="stat-restaurants">—</p>
+                </div>
+                <div class="bg-surface p-6 rounded-2xl border border-outline border-l-4 border-l-secondary-text">
+                    <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Dishes</p>
+                    <p class="text-3xl font-black" id="stat-dishes">—</p>
+                </div>
+                <div class="bg-surface p-6 rounded-2xl border border-outline border-l-4 border-l-error-red">
+                    <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Orders</p>
+                    <p class="text-3xl font-black" id="stat-orders">—</p>
+                </div>
+                <div class="bg-surface p-6 rounded-2xl border border-outline border-l-4 border-l-primary">
+                    <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Revenue</p>
+                    <p class="text-2xl font-black text-primary" id="stat-revenue">—</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-surface border border-outline rounded-2xl p-6">
+                    <h3 class="font-bold text-base mb-4">Top 5 Dishes</h3>
+                    <table class="w-full text-sm">
+                        <thead><tr class="border-b border-outline">
+                            <th class="text-left pb-2 text-xs font-bold text-secondary-text uppercase">Dish</th>
+                            <th class="text-left pb-2 text-xs font-bold text-secondary-text uppercase">Restaurant</th>
+                            <th class="text-right pb-2 text-xs font-bold text-secondary-text uppercase">Orders</th>
+                        </tr></thead>
+                        <tbody id="topDishesTable" class="divide-y divide-outline"></tbody>
+                    </table>
+                </div>
+                <div class="bg-surface border border-outline rounded-2xl p-6">
+                    <h3 class="font-bold text-base mb-4">Top 5 Restaurants</h3>
+                    <table class="w-full text-sm">
+                        <thead><tr class="border-b border-outline">
+                            <th class="text-left pb-2 text-xs font-bold text-secondary-text uppercase">Restaurant</th>
+                            <th class="text-right pb-2 text-xs font-bold text-secondary-text uppercase">Orders</th>
+                        </tr></thead>
+                        <tbody id="topRestTable" class="divide-y divide-outline"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- USERS TAB -->
+        <div class="tab-content" id="tab-users">
+            <h2 class="text-2xl font-black mb-6">User Management</h2>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap gap-3 mb-6 items-center">
+                <input type="text" id="userSearch" placeholder="Search by name or email..."
+                    class="px-4 py-2.5 border border-outline rounded-xl bg-surface text-sm outline-none focus:border-primary transition-all w-64"/>
+                <div class="flex gap-2" id="roleFilterBtns">
+                    <button onclick="setRoleFilter('')" class="role-filter-btn active px-4 py-2 rounded-xl text-sm font-bold border border-outline bg-primary text-white transition-all" data-role="">All</button>
+                    <button onclick="setRoleFilter('student')" class="role-filter-btn px-4 py-2 rounded-xl text-sm font-bold border border-outline text-secondary-text hover:bg-surface transition-all" data-role="student">Students</button>
+                    <button onclick="setRoleFilter('faculty')" class="role-filter-btn px-4 py-2 rounded-xl text-sm font-bold border border-outline text-secondary-text hover:bg-surface transition-all" data-role="faculty">Faculty</button>
+                    <button onclick="setRoleFilter('restaurant')" class="role-filter-btn px-4 py-2 rounded-xl text-sm font-bold border border-outline text-secondary-text hover:bg-surface transition-all" data-role="restaurant">Restaurants</button>
+                    <button onclick="setRoleFilter('admin')" class="role-filter-btn px-4 py-2 rounded-xl text-sm font-bold border border-outline text-secondary-text hover:bg-surface transition-all" data-role="admin">Admins</button>
+                </div>
+            </div>
+
+            <!-- Role counts -->
+            <div class="flex gap-4 mb-6" id="roleCounts"></div>
+
+            <div class="bg-white border border-outline rounded-2xl overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-surface border-b border-outline">
+                        <tr>
+                            <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Name</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Role</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Phone</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline" id="usersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RESTAURANTS TAB -->
+        <div class="tab-content space-y-8" id="tab-restaurants">
+            <div>
+                <h2 class="text-2xl font-black mb-6">Create Restaurant Owner</h2>
+                <div class="bg-surface p-8 rounded-2xl border border-outline max-w-2xl">
+                    <form id="createOwnerForm" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Owner Name</label>
+                                <input type="text" name="name" placeholder="Full Name" required
+                                    class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Email</label>
+                                <input type="email" name="email" placeholder="owner@restaurant.com" required
+                                    class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Password</label>
+                                <input type="password" name="password" placeholder="Set a password" required
+                                    class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Phone</label>
+                                <input type="tel" name="phone" placeholder="Phone number"
+                                    class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Restaurant Name</label>
+                            <input type="text" name="restaurant_name" placeholder="Restaurant Name" required
+                                class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Description</label>
+                            <textarea name="description" rows="2" placeholder="Brief description..."
+                                class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all resize-none"></textarea>
+                        </div>
+                        <button type="submit"
+                            class="bg-primary text-white font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all">
+                            Register Owner &amp; Restaurant
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold mb-4">All Restaurants</h3>
+                <div class="bg-white border border-outline rounded-2xl overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-surface border-b border-outline">
+                            <tr>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Restaurant</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Owner</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Rating</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right">Toggle</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline" id="restaurantsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- DISHES TAB -->
+        <div class="tab-content" id="tab-dishes">
+            <h2 class="text-2xl font-black mb-4">All Dishes</h2>
+
+            <!-- Filter by restaurant -->
+            <div class="mb-6 flex items-center gap-3">
+                <label class="text-sm font-bold text-secondary-text">Filter by Restaurant:</label>
+                <select id="restaurantFilter" onchange="fetchDishes()"
+                    class="px-4 py-2.5 border border-outline rounded-xl bg-surface text-sm outline-none focus:border-primary transition-all">
+                    <option value="">All Restaurants</option>
+                </select>
+            </div>
+
+            <!-- Grouped dishes display -->
+            <div id="dishesGrouped" class="space-y-8"></div>
+        </div>
+
+        <!-- SUPPORT TAB -->
+        <div class="tab-content" id="tab-support">
+            <h2 class="text-2xl font-black mb-4">Support Tickets</h2>
+
+            <div class="flex gap-2 mb-6">
+                <button onclick="fetchTickets('')" class="ticket-filter-btn px-4 py-2 rounded-xl text-sm font-bold bg-primary text-white" data-status="">All</button>
+                <button onclick="fetchTickets('open')" class="ticket-filter-btn px-4 py-2 rounded-xl text-sm font-bold border border-outline text-secondary-text hover:bg-surface" data-status="open">Open</button>
+                <button onclick="fetchTickets('responded')" class="ticket-filter-btn px-4 py-2 rounded-xl text-sm font-bold border border-outline text-secondary-text hover:bg-surface" data-status="responded">Responded</button>
+                <button onclick="fetchTickets('closed')" class="ticket-filter-btn px-4 py-2 rounded-xl text-sm font-bold border border-outline text-secondary-text hover:bg-surface" data-status="closed">Closed</button>
+            </div>
+
+            <div id="ticketsList" class="space-y-4"></div>
+        </div>
+
+    </div>
+</main>
+
+<script>
+const API = 'http://127.0.0.1:5000';
+const adminId = localStorage.getItem('user_id');
+const adminRole = localStorage.getItem('user_role');
+if (!adminRole || adminRole !== 'admin') window.location.href = 'login.html';
+
+function showToast(msg, type='info') {
+    const existing = document.querySelector('.vmeal-toast');
+    if (existing) existing.remove();
+    const colors = { success:'#60B246', error:'#D83C3C', info:'#FC8019' };
+    const t = document.createElement('div');
+    t.className = 'vmeal-toast';
+    t.textContent = msg;
+    t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]};color:white;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:99999;opacity:1;transition:opacity 0.4s;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,0.15);font-family:'Inter',sans-serif;`;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; }, 2600);
+    setTimeout(() => { t.remove(); }, 3000);
+}
+
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+const TAB_TITLES = {
+    dashboard: 'Dashboard Overview', users: 'User Management',
+    restaurants: 'Restaurant Partners', dishes: 'Menu Catalog', support: 'Support Tickets'
+};
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link').forEach(l => {
+        l.classList.remove('active', 'text-white');
+        l.classList.add('text-secondary-text');
+    });
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    const link = document.getElementById(`nav-${tab}`);
+    link.classList.add('active', 'text-white');
+    link.classList.remove('text-secondary-text');
+    document.getElementById('tabTitle').textContent = TAB_TITLES[tab];
+    if (tab === 'users') fetchUsers();
+    if (tab === 'restaurants') fetchRestaurants();
+    if (tab === 'dishes') fetchDishes();
+    if (tab === 'support') fetchTickets('');
+}
+
+// ---- STATS ----
+async function fetchStats() {
+    try {
+        const res = await fetch(`${API}/admin/stats?admin_id=${adminId}`);
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('stat-users').textContent = data.data.total_users;
+            document.getElementById('stat-restaurants').textContent = data.data.total_restaurants;
+            document.getElementById('stat-dishes').textContent = data.data.total_dishes;
+            document.getElementById('stat-orders').textContent = data.data.total_orders;
+            document.getElementById('stat-revenue').textContent = `₹${Math.round(data.data.total_revenue).toLocaleString('en-IN')}`;
+
+            document.getElementById('topDishesTable').innerHTML = (data.data.top_dishes || []).map(d => `
+                <tr class="hover:bg-surface">
+                    <td class="py-3 font-semibold">${d.dish_name}</td>
+                    <td class="py-3 text-secondary-text">${d.restaurant_name}</td>
+                    <td class="py-3 text-right font-black text-primary">${d.order_count}</td>
+                </tr>`).join('') || `<tr><td colspan="3" class="py-4 text-secondary-text text-sm">No orders yet</td></tr>`;
+
+            document.getElementById('topRestTable').innerHTML = (data.data.top_restaurants || []).map(r => `
+                <tr class="hover:bg-surface">
+                    <td class="py-3 font-semibold">${r.name}</td>
+                    <td class="py-3 text-right font-black text-primary">${r.order_count}</td>
+                </tr>`).join('') || `<tr><td colspan="2" class="py-4 text-secondary-text text-sm">No orders yet</td></tr>`;
+        }
+    } catch {}
+}
+
+// ---- USERS ----
+let currentRoleFilter = '';
+let searchTimeout;
+
+function setRoleFilter(role) {
+    currentRoleFilter = role;
+    document.querySelectorAll('.role-filter-btn').forEach(btn => {
+        const isActive = btn.dataset.role === role;
+        btn.classList.toggle('bg-primary', isActive);
+        btn.classList.toggle('text-white', isActive);
+        btn.classList.toggle('border-primary', isActive);
+        btn.classList.toggle('text-secondary-text', !isActive);
+    });
+    fetchUsers();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchEl = document.getElementById('userSearch');
+    if (searchEl) {
+        searchEl.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(fetchUsers, 300);
+        });
+    }
+});
+
+async function fetchUsers() {
+    const search = document.getElementById('userSearch')?.value?.trim() || '';
+    const url = `${API}/admin/users?admin_id=${adminId}&role=${currentRoleFilter}&search=${encodeURIComponent(search)}`;
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        // Role count badges
+        if (data.role_counts) {
+            document.getElementById('roleCounts').innerHTML = data.role_counts.map(rc => `
+                <span class="text-xs font-bold px-3 py-1.5 rounded-full border border-outline bg-surface">
+                    ${rc.role}: <span class="text-primary">${rc.count}</span>
+                </span>`).join('');
+        }
+
+        const roleColor = { student:'bg-green-100 text-green-700', faculty:'bg-blue-100 text-blue-700', restaurant:'bg-orange-100 text-orange-700', admin:'bg-gray-100 text-gray-600' };
+
+        document.getElementById('usersTableBody').innerHTML = (data.data || []).map(u => `
+            <tr class="hover:bg-surface">
+                <td class="px-6 py-4 font-semibold text-sm">${u.name}</td>
+                <td class="px-6 py-4 text-sm text-secondary-text">${u.email}</td>
+                <td class="px-6 py-4">
+                    <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-full ${roleColor[u.role] || 'bg-gray-100 text-gray-600'}">${u.role}</span>
+                </td>
+                <td class="px-6 py-4 text-sm text-secondary-text">${u.phone || '—'}</td>
+                <td class="px-6 py-4 text-right">
+                    <div id="delUserRow-${u.user_id}">
+                        <button onclick="startDeleteUser(${u.user_id})"
+                            class="text-error-red hover:underline font-bold text-xs uppercase">Delete</button>
+                    </div>
+                    <div id="confirmUserRow-${u.user_id}" class="hidden flex gap-2 justify-end">
+                        <button onclick="confirmDeleteUser(${u.user_id})"
+                            class="text-xs font-bold text-white bg-error-red px-3 py-1 rounded-lg">Confirm</button>
+                        <button onclick="cancelDeleteUser(${u.user_id})"
+                            class="text-xs font-bold text-secondary-text border border-outline px-2 py-1 rounded-lg">Cancel</button>
+                    </div>
+                </td>
+            </tr>`).join('');
+    } catch {}
+}
+
+function startDeleteUser(id) {
+    document.getElementById(`delUserRow-${id}`).classList.add('hidden');
+    document.getElementById(`confirmUserRow-${id}`).classList.remove('hidden');
+}
+function cancelDeleteUser(id) {
+    document.getElementById(`delUserRow-${id}`).classList.remove('hidden');
+    document.getElementById(`confirmUserRow-${id}`).classList.add('hidden');
+}
+async function confirmDeleteUser(id) {
+    try {
+        const res = await fetch(`${API}/admin/user/${id}?admin_id=${adminId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) { showToast('User deleted', 'success'); fetchUsers(); }
+        else showToast(data.message, 'error');
+    } catch { showToast('Server error', 'error'); }
+}
+
+// ---- RESTAURANTS ----
+async function fetchRestaurants() {
+    try {
+        const res = await fetch(`${API}/admin/restaurants?admin_id=${adminId}`);
+        const data = await res.json();
+        document.getElementById('restaurantsTableBody').innerHTML = (data.data || []).map(r => `
+            <tr class="hover:bg-surface">
+                <td class="px-6 py-4 font-bold text-sm">${r.name}</td>
+                <td class="px-6 py-4 text-sm text-secondary-text">${r.owner_name}</td>
+                <td class="px-6 py-4 text-sm">
+                    ${r.avg_rating > 0 ? `<span class="text-yellow-500 font-bold">★ ${r.avg_rating}</span> <span class="text-secondary-text text-xs">(${r.review_count})</span>` : '<span class="text-secondary-text text-xs">No ratings</span>'}
+                </td>
+                <td class="px-6 py-4">
+                    <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-full ${r.is_open ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">
+                        ${r.is_open ? 'Open' : 'Closed'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <button onclick="toggleRestaurant(${r.restaurant_id}, ${!r.is_open})"
+                        class="text-xs font-bold ${r.is_open ? 'text-error-red border-error-red' : 'text-success border-success'} border px-3 py-1.5 rounded-lg hover:opacity-80">
+                        ${r.is_open ? 'Close' : 'Open'}
+                    </button>
+                </td>
+            </tr>`).join('');
+    } catch {}
+}
+
+async function toggleRestaurant(id, isOpen) {
+    try {
+        const res = await fetch(`${API}/admin/toggle-restaurant`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ admin_id: parseInt(adminId), restaurant_id: id, is_open: isOpen })
+        });
+        const data = await res.json();
+        if (data.success) { showToast(`Restaurant ${isOpen ? 'opened' : 'closed'}`, 'success'); fetchRestaurants(); }
+        else showToast(data.message, 'error');
+    } catch { showToast('Server error', 'error'); }
+}
+
+// ---- DISHES (grouped by restaurant) ----
+async function fetchDishes() {
+    const filter = document.getElementById('restaurantFilter')?.value || '';
+    try {
+        const res = await fetch(`${API}/admin/dishes?admin_id=${adminId}&restaurant_id=${filter}`);
+        const data = await res.json();
+
+        // Populate restaurant filter dropdown
+        const select = document.getElementById('restaurantFilter');
+        if (data.restaurant_list && select.options.length <= 1) {
+            data.restaurant_list.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.restaurant_id;
+                opt.textContent = r.name;
+                select.appendChild(opt);
+            });
+        }
+
+        const grouped = data.grouped || {};
+        const container = document.getElementById('dishesGrouped');
+
+        if (!Object.keys(grouped).length) {
+            container.innerHTML = `<p class="text-secondary-text text-sm">No dishes found.</p>`;
+            return;
+        }
+
+        container.innerHTML = Object.entries(grouped).map(([restName, restData]) => `
+        <div class="bg-white border border-outline rounded-2xl overflow-hidden">
+            <div class="px-6 py-4 bg-surface border-b border-outline flex items-center justify-between">
+                <h3 class="font-bold text-base">${restName}</h3>
+                <span class="text-xs text-secondary-text font-semibold">${restData.dishes.length} dishes</span>
+            </div>
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-outline">
+                        <th class="px-6 py-3 text-xs font-bold uppercase tracking-wider text-secondary-text">Dish</th>
+                        <th class="px-6 py-3 text-xs font-bold uppercase tracking-wider text-secondary-text">Price</th>
+                        <th class="px-6 py-3 text-xs font-bold uppercase tracking-wider text-secondary-text">Status</th>
+                        <th class="px-6 py-3 text-xs font-bold uppercase tracking-wider text-secondary-text">Orders</th>
+                        <th class="px-6 py-3 text-xs font-bold uppercase tracking-wider text-right text-secondary-text">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline">
+                    ${restData.dishes.map(d => `
+                    <tr class="hover:bg-surface">
+                        <td class="px-6 py-3 font-semibold text-sm">${d.name}</td>
+                        <td class="px-6 py-3 text-sm font-bold text-primary">₹${parseFloat(d.price).toFixed(0)}</td>
+                        <td class="px-6 py-3">
+                            ${d.out_of_stock
+                                ? `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-orange-100 text-orange-600">Out of Stock</span>`
+                                : d.available
+                                ? `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-green-100 text-green-700">Available</span>`
+                                : `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Hidden</span>`}
+                        </td>
+                        <td class="px-6 py-3 text-sm text-secondary-text">${d.order_count || 0}</td>
+                        <td class="px-6 py-3 text-right">
+                            <button onclick="adminDeleteDish(${d.dish_id})"
+                                class="text-error-red hover:underline font-bold text-xs uppercase">Delete</button>
+                        </td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>`).join('');
+    } catch {}
+}
+
+async function adminDeleteDish(id) {
+    try {
+        const res = await fetch(`${API}/admin/dish/${id}?admin_id=${adminId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) { showToast('Dish deleted', 'success'); fetchDishes(); }
+        else showToast(data.message, 'error');
+    } catch { showToast('Server error', 'error'); }
+}
+
+// ---- CREATE RESTAURANT OWNER ----
+document.getElementById('createOwnerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const body = Object.fromEntries(fd.entries());
+    body.admin_id = parseInt(adminId);
+    try {
+        const res = await fetch(`${API}/admin/create-restaurant-owner`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast('Restaurant owner created!', 'success');
+            e.target.reset();
+            fetchRestaurants();
+            fetchStats();
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch { showToast('Cannot reach server. Is Flask running?', 'error'); }
+});
+
+// ---- SUPPORT TICKETS ----
+async function fetchTickets(status) {
+    document.querySelectorAll('.ticket-filter-btn').forEach(btn => {
+        const isActive = btn.dataset.status === status;
+        btn.classList.toggle('bg-primary', isActive);
+        btn.classList.toggle('text-white', isActive);
+        btn.classList.toggle('text-secondary-text', !isActive);
+    });
+    try {
+        const res = await fetch(`${API}/admin/support-tickets?admin_id=${adminId}&status=${status}`);
+        const data = await res.json();
+        const list = document.getElementById('ticketsList');
+        if (!data.success || !data.data.length) {
+            list.innerHTML = `<p class="text-secondary-text text-sm p-8 border border-dashed border-outline rounded-2xl text-center">No tickets found.</p>`;
+            return;
+        }
+        const statusColor = { open:'bg-orange-100 text-orange-600', responded:'bg-blue-100 text-blue-600', closed:'bg-gray-100 text-gray-500' };
+        list.innerHTML = data.data.map(t => `
+        <div class="bg-white border border-outline rounded-2xl p-6">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h4 class="font-bold">${t.subject}</h4>
+                    <p class="text-xs text-secondary-text mt-0.5">${t.user_name} — ${t.user_email}</p>
+                </div>
+                <span class="text-[10px] font-bold uppercase px-2 py-1 rounded-full ${statusColor[t.status] || ''}">${t.status}</span>
+            </div>
+            <p class="text-sm text-secondary-text mb-4">${t.message}</p>
+            ${t.admin_response ? `<div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4">
+                <p class="text-xs font-bold text-blue-600 mb-1">Your Response:</p>
+                <p class="text-sm text-blue-800">${t.admin_response}</p>
+            </div>` : ''}
+            <div class="flex gap-2 mt-3">
+                <textarea id="resp-${t.ticket_id}" placeholder="Type your response..." rows="2"
+                    class="flex-1 px-3 py-2 border border-outline rounded-xl text-sm outline-none focus:border-primary resize-none"></textarea>
+                <div class="flex flex-col gap-2">
+                    <button onclick="respondTicket(${t.ticket_id}, 'responded')"
+                        class="bg-primary text-white font-bold px-4 py-2 rounded-xl text-xs hover:opacity-90">Respond</button>
+                    <button onclick="respondTicket(${t.ticket_id}, 'closed')"
+                        class="bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded-xl text-xs hover:bg-gray-300">Close</button>
+                </div>
+            </div>
+            <p class="text-xs text-secondary-text/60 mt-2">${new Date(t.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</p>
+        </div>`).join('');
+    } catch {}
+}
+
+async function respondTicket(ticketId, status) {
+    const response = document.getElementById(`resp-${ticketId}`).value.trim();
+    try {
+        const res = await fetch(`${API}/admin/support-tickets/respond`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ admin_id: parseInt(adminId), ticket_id: ticketId, response, status })
+        });
+        const data = await res.json();
+        if (data.success) { showToast('Response sent!', 'success'); fetchTickets(''); }
+        else showToast(data.message, 'error');
+    } catch { showToast('Server error', 'error'); }
+}
+
+// Init
+fetchStats();
+</script>
+</body>
+</html>

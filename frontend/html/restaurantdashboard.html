@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Dashboard | V Meal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: {
+                "primary": "#FC8019", "background": "#ffffff", "surface": "#F8F8F8",
+                "surface-container": "#eeeeee", "on-surface": "#1a1c1c",
+                "outline": "#E9E9EB", "secondary-text": "#686B78",
+                "success": "#60B246", "error-red": "#D83C3C",
+            }}}
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .kinetic-gradient { background: linear-gradient(135deg, #984800 0%, #FC8019 100%); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .sidebar-item.active { background: white; color: #FC8019; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        body { font-family: 'Inter', sans-serif; }
+        .live-dot { animation: blink 1.5s ease-in-out infinite; }
+        @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+    </style>
+</head>
+<body class="bg-white text-on-surface flex min-h-screen">
+
+<!-- SIDEBAR -->
+<aside class="fixed left-0 top-0 h-screen w-[240px] bg-surface border-r border-outline flex flex-col z-50">
+    <div class="p-5 border-b border-outline">
+        <img src="1766987781692.png" class="h-8 w-auto" alt="V Meal"/>
+    </div>
+    <nav class="flex-1 p-3 space-y-1">
+        <button onclick="switchTab('orders')" id="btn-orders"
+            class="sidebar-item active w-full px-4 py-3 rounded-xl flex items-center gap-3 text-secondary-text hover:bg-white/70 text-sm font-semibold transition-all">
+            <span class="material-symbols-outlined">receipt_long</span> Live Orders
+        </button>
+        <button onclick="switchTab('menu')" id="btn-menu"
+            class="sidebar-item w-full px-4 py-3 rounded-xl flex items-center gap-3 text-secondary-text hover:bg-white/70 text-sm font-semibold transition-all">
+            <span class="material-symbols-outlined">restaurant_menu</span> Menu
+        </button>
+        <button onclick="switchTab('profile')" id="btn-profile"
+            class="sidebar-item w-full px-4 py-3 rounded-xl flex items-center gap-3 text-secondary-text hover:bg-white/70 text-sm font-semibold transition-all">
+            <span class="material-symbols-outlined">storefront</span> Profile
+        </button>
+    </nav>
+    <div class="p-4 border-t border-outline">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center">
+                <span class="material-symbols-outlined text-secondary-text text-base">person</span>
+            </div>
+            <div class="truncate">
+                <p class="text-sm font-bold truncate" id="ownerName">Owner</p>
+                <p class="text-xs text-secondary-text">Restaurant Owner</p>
+            </div>
+        </div>
+        <button onclick="logout()"
+            class="w-full flex items-center gap-2 text-sm text-secondary-text hover:text-error-red transition-colors font-medium px-2 py-1.5 rounded-lg hover:bg-red-50">
+            <span class="material-symbols-outlined text-base">logout</span> Logout
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="flex-1 ml-[240px] min-h-screen bg-background">
+
+    <!-- Header -->
+    <div class="sticky top-0 z-40 bg-white/85 backdrop-blur border-b border-outline px-8 py-4 flex items-center justify-between">
+        <h1 class="text-xl font-black">Kitchen Overview</h1>
+        <div class="flex items-center gap-2 text-sm font-semibold text-secondary-text">
+            <span class="w-2 h-2 rounded-full bg-success live-dot"></span> Live
+        </div>
+    </div>
+
+    <div class="p-8">
+
+        <!-- Stats Row -->
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+            <div class="bg-white border border-outline rounded-2xl p-5 border-l-4 border-l-primary">
+                <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Dishes</p>
+                <p class="text-3xl font-black" id="statDishes">—</p>
+            </div>
+            <div class="bg-white border border-outline rounded-2xl p-5 border-l-4 border-l-success">
+                <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Today Orders</p>
+                <p class="text-3xl font-black" id="statToday">—</p>
+            </div>
+            <div class="bg-white border border-outline rounded-2xl p-5 border-l-4 border-l-secondary-text">
+                <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">All Time</p>
+                <p class="text-3xl font-black" id="statAll">—</p>
+            </div>
+            <div class="bg-white border border-outline rounded-2xl p-5 border-l-4 border-l-error-red">
+                <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Pending</p>
+                <p class="text-3xl font-black text-error-red" id="statPending">—</p>
+            </div>
+            <div class="bg-white border border-outline rounded-2xl p-5 border-l-4 border-l-primary">
+                <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Today Revenue</p>
+                <p class="text-2xl font-black text-primary" id="statDailyRevenue">—</p>
+            </div>
+            <div class="bg-white border border-outline rounded-2xl p-5 border-l-4 border-l-success">
+                <p class="text-xs font-bold uppercase tracking-widest text-secondary-text mb-1">Total Revenue</p>
+                <p class="text-2xl font-black text-success" id="statTotalRevenue">—</p>
+            </div>
+        </div>
+
+        <!-- ORDERS TAB -->
+        <div class="tab-content active" id="tab-orders">
+            <h2 class="text-2xl font-black mb-2">Live Orders</h2>
+            <p class="text-secondary-text text-sm mb-6">Auto-refreshes every 5 seconds</p>
+            <div id="ordersContainer" class="space-y-4">
+                <div class="p-12 text-center text-secondary-text border-2 border-dashed border-outline rounded-2xl">Loading...</div>
+            </div>
+        </div>
+
+        <!-- MENU TAB -->
+        <div class="tab-content" id="tab-menu">
+            <h2 class="text-2xl font-black mb-6">Menu Manager</h2>
+
+            <!-- Add/Edit Form -->
+            <div class="bg-surface border border-outline rounded-2xl p-8 max-w-2xl mb-8">
+                <h3 class="text-lg font-bold mb-6" id="formTitle">Add New Dish</h3>
+                <form id="dishForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Dish Name</label>
+                        <input type="text" id="dishName" placeholder="e.g. Paneer Butter Masala" required
+                            class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Description</label>
+                        <textarea id="dishDesc" rows="2" placeholder="Describe the dish..."
+                            class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all resize-none"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Price (₹)</label>
+                            <input type="number" id="dishPrice" placeholder="99" step="0.01" required
+                                class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Calories</label>
+                            <input type="number" id="dishCalories" placeholder="350"
+                                class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Image</label>
+                        <input type="file" id="dishImage" accept="image/*"
+                            class="block w-full text-sm text-secondary-text file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-primary file:text-white hover:file:bg-orange-600"/>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="dishAvailable" checked class="w-4 h-4 accent-primary"/>
+                            <span class="text-sm font-semibold">Available</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="dishOutOfStock" class="w-4 h-4 accent-orange-400"/>
+                            <span class="text-sm font-semibold text-orange-500">Out of Stock</span>
+                        </label>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="submit"
+                            class="flex-1 kinetic-gradient text-white py-3 rounded-xl font-bold hover:opacity-90 transition-all">
+                            <span id="formBtnText">Add to Menu</span>
+                        </button>
+                        <button type="button" id="cancelEditBtn" onclick="cancelEdit()"
+                            class="hidden px-6 py-3 border border-outline rounded-xl text-sm font-semibold text-secondary-text hover:bg-surface">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <h3 class="text-lg font-bold mb-4">Your Menu</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="dishGrid"></div>
+        </div>
+
+        <!-- PROFILE TAB -->
+        <div class="tab-content" id="tab-profile">
+            <h2 class="text-2xl font-black mb-6">Restaurant Profile</h2>
+            <div class="bg-surface border border-outline rounded-2xl p-8 max-w-2xl">
+                <form id="profileForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Restaurant Name</label>
+                        <input type="text" id="profileName"
+                            class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Description</label>
+                        <textarea id="profileDesc" rows="3"
+                            class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Phone Number</label>
+                        <input type="tel" id="profilePhone" placeholder="e.g. 9876543210"
+                            class="w-full px-4 py-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary transition-all"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-secondary-text mb-2">Restaurant Image</label>
+                        <input type="file" id="profileImage" accept="image/*"
+                            class="block w-full text-sm text-secondary-text file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-primary file:text-white hover:file:bg-orange-600"/>
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="profileOpen" checked class="w-4 h-4 accent-primary"/>
+                        <span class="text-sm font-semibold">Restaurant is Open</span>
+                    </label>
+                    <button type="submit"
+                        class="kinetic-gradient text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 transition-all">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+const API = 'http://127.0.0.1:5000';
+const userId = localStorage.getItem('user_id');
+const userRole = localStorage.getItem('user_role');
+if (!userRole || userRole !== 'restaurant') window.location.href = 'login.html';
+
+document.getElementById('ownerName').textContent = localStorage.getItem('user_name') || 'Owner';
+
+function showToast(msg, type='info') {
+    const existing = document.querySelector('.vmeal-toast');
+    if (existing) existing.remove();
+    const colors = { success:'#60B246', error:'#D83C3C', info:'#FC8019' };
+    const t = document.createElement('div');
+    t.className = 'vmeal-toast';
+    t.textContent = msg;
+    t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]};color:white;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:99999;opacity:1;transition:opacity 0.4s;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,0.15);font-family:'Inter',sans-serif;`;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; }, 2600);
+    setTimeout(() => { t.remove(); }, 3000);
+}
+
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+let pollInterval;
+let editingDishId = null;
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    document.getElementById(`btn-${tab}`).classList.add('active');
+    clearInterval(pollInterval);
+    if (tab === 'orders') { fetchOrders(); pollInterval = setInterval(fetchOrders, 5000); }
+    if (tab === 'menu') fetchDishes();
+    if (tab === 'profile') fetchProfile();
+}
+
+// ---- STATS ----
+async function fetchStats() {
+    try {
+        const res = await fetch(`${API}/restaurant/stats?user_id=${userId}`);
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('statDishes').textContent = data.data.total_dishes;
+            document.getElementById('statToday').textContent = data.data.orders_today;
+            document.getElementById('statAll').textContent = data.data.orders_all_time;
+            document.getElementById('statPending').textContent = data.data.pending_orders;
+            document.getElementById('statDailyRevenue').textContent = `₹${Math.round(data.data.daily_revenue)}`;
+            document.getElementById('statTotalRevenue').textContent = `₹${Math.round(data.data.total_revenue)}`;
+        }
+    } catch {}
+}
+
+// ---- ORDERS ----
+async function fetchOrders() {
+    fetchStats();
+    try {
+        const res = await fetch(`${API}/restaurant/orders?user_id=${userId}`);
+        const data = await res.json();
+        const container = document.getElementById('ordersContainer');
+
+        if (!data.success || !data.data.length) {
+            container.innerHTML = `<div class="p-12 text-center text-secondary-text border-2 border-dashed border-outline rounded-2xl font-medium">No active orders right now.</div>`;
+            return;
+        }
+
+        const statusBadge = {
+            pending: 'bg-orange-100 text-orange-600',
+            accepted: 'bg-blue-100 text-blue-600',
+            preparing: 'bg-yellow-100 text-yellow-700',
+            ready: 'bg-purple-100 text-purple-600',
+        };
+
+        container.innerHTML = data.data.map(order => `
+        <div class="bg-surface border border-outline rounded-2xl p-6 border-l-4 border-l-primary shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-black">#${order.order_id}</span>
+                        <span class="text-xs font-bold uppercase px-2 py-0.5 rounded-full ${statusBadge[order.status] || 'bg-gray-100 text-gray-500'}">${order.status}</span>
+                    </div>
+                    <p class="font-bold text-base mb-1">${order.student_name}</p>
+                    <!-- Student contact — only visible to restaurant owner -->
+                    ${order.student_phone ? `<p class="text-xs text-secondary-text mb-1">📞 ${order.student_phone}</p>` : ''}
+                    ${order.student_email ? `<p class="text-xs text-secondary-text mb-1">✉️ ${order.student_email}</p>` : ''}
+                    <div class="text-sm text-secondary-text mt-1 space-y-0.5">
+                        ${(order.items || []).map(i => `<p>${i.quantity}x ${i.name} — ₹${parseFloat(i.price).toFixed(0)}</p>`).join('')}
+                    </div>
+                    <p class="font-black text-primary text-lg mt-2">₹${parseFloat(order.total_price).toFixed(0)}</p>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[180px]">
+                    ${order.status === 'pending' ? `
+                        <div class="flex gap-2">
+                            <button onclick="showEta(${order.order_id})"
+                                class="flex-1 bg-success text-white font-bold py-2 rounded-xl text-sm hover:opacity-90">Accept</button>
+                            <button onclick="updateStatus(${order.order_id},'rejected')"
+                                class="flex-1 bg-error-red text-white font-bold py-2 rounded-xl text-sm hover:opacity-90">Reject</button>
+                        </div>
+                        <div id="eta-${order.order_id}" class="hidden">
+                            <input type="number" placeholder="Est. time (mins)" id="etaVal-${order.order_id}"
+                                class="w-full px-3 py-2 border border-outline rounded-xl text-sm mb-2 outline-none focus:border-primary"/>
+                            <button onclick="confirmAccept(${order.order_id})"
+                                class="w-full bg-success text-white font-bold py-2 rounded-xl text-sm">Confirm Accept</button>
+                        </div>` :
+                    order.status === 'accepted' ? `
+                        <button onclick="updateStatus(${order.order_id},'preparing')"
+                            class="w-full kinetic-gradient text-white font-bold py-2.5 rounded-xl text-sm">Start Preparing</button>` :
+                    order.status === 'preparing' ? `
+                        <button onclick="updateStatus(${order.order_id},'ready')"
+                            class="w-full kinetic-gradient text-white font-bold py-2.5 rounded-xl text-sm">Mark Ready</button>` :
+                    order.status === 'ready' ? `
+                        <button onclick="updateStatus(${order.order_id},'completed')"
+                            class="w-full bg-success text-white font-bold py-2.5 rounded-xl text-sm">Complete Order</button>` : ''}
+                </div>
+            </div>
+        </div>`).join('');
+    } catch (err) { console.error(err); }
+}
+
+function showEta(orderId) {
+    document.getElementById(`eta-${orderId}`).classList.remove('hidden');
+}
+
+async function confirmAccept(orderId) {
+    const eta = document.getElementById(`etaVal-${orderId}`).value;
+    await updateStatus(orderId, 'accepted', eta);
+}
+
+async function updateStatus(orderId, status, eta) {
+    try {
+        const body = { user_id: parseInt(userId), order_id: orderId, status };
+        if (eta) body.estimated_time = parseInt(eta);
+        const res = await fetch(`${API}/restaurant/update-order-status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (data.success) { showToast(`Order ${status}`, 'success'); fetchOrders(); }
+        else showToast(data.message, 'error');
+    } catch { showToast('Server error', 'error'); }
+}
+
+// ---- DISHES ----
+async function fetchDishes() {
+    try {
+        const res = await fetch(`${API}/restaurant/dishes?user_id=${userId}`);
+        const data = await res.json();
+        const grid = document.getElementById('dishGrid');
+        if (!data.success || !data.data.length) {
+            grid.innerHTML = `<p class="col-span-3 text-center py-12 text-secondary-text border-2 border-dashed border-outline rounded-2xl">No dishes yet.</p>`;
+            return;
+        }
+        grid.innerHTML = data.data.map(d => {
+            const img = d.image ? `${API}/${d.image}` : `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=200&fit=crop`;
+            return `
+            <div class="bg-white border border-outline rounded-2xl overflow-hidden shadow-sm ${d.out_of_stock ? 'opacity-70' : ''}">
+                <div class="relative">
+                    <img src="${img}" alt="${d.name}" class="w-full h-40 object-cover"
+                        onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=200&fit=crop'"/>
+                    ${d.out_of_stock ? `<div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <span class="bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full">Out of Stock</span>
+                    </div>` : ''}
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-bold text-sm">${d.name}</h4>
+                        <span class="text-primary font-black text-sm">₹${parseFloat(d.price).toFixed(0)}</span>
+                    </div>
+                    ${d.calories ? `<span class="text-[10px] font-bold px-2 py-0.5 bg-surface-container text-secondary-text rounded-full">${d.calories} Cal</span>` : ''}
+                    <p class="text-xs text-secondary-text mt-1 mb-2 line-clamp-2">${d.description || ''}</p>
+
+                    <!-- Toggles -->
+                    <div class="flex items-center gap-4 mb-3">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" ${d.available ? 'checked' : ''} onchange="toggleField(${d.dish_id}, 'available', this.checked)"
+                                class="w-3.5 h-3.5 accent-primary"/>
+                            <span class="text-xs font-semibold ${d.available ? 'text-success' : 'text-secondary-text'}">Available</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" ${d.out_of_stock ? 'checked' : ''} onchange="toggleField(${d.dish_id}, 'out_of_stock', this.checked)"
+                                class="w-3.5 h-3.5 accent-orange-400"/>
+                            <span class="text-xs font-semibold text-orange-500">Out of Stock</span>
+                        </label>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2">
+                        <button onclick="editDish(${d.dish_id},'${d.name.replace(/'/g,"\\'")}','${(d.description||'').replace(/'/g,"\\'")}',${d.price},${d.calories||0},${d.available},${d.out_of_stock})"
+                            class="flex-1 text-xs font-bold text-primary border border-primary py-1.5 rounded-lg hover:bg-primary hover:text-white transition-all">Edit</button>
+                        <div id="del-confirm-${d.dish_id}" class="hidden flex gap-1">
+                            <button onclick="deleteDish(${d.dish_id})"
+                                class="text-xs font-bold text-white bg-error-red px-2 py-1.5 rounded-lg">Confirm</button>
+                            <button onclick="document.getElementById('del-confirm-${d.dish_id}').classList.add('hidden');document.getElementById('delbtn-${d.dish_id}').classList.remove('hidden')"
+                                class="text-xs font-bold text-secondary-text border border-outline px-2 py-1.5 rounded-lg">Cancel</button>
+                        </div>
+                        <button id="delbtn-${d.dish_id}"
+                            onclick="document.getElementById('del-confirm-${d.dish_id}').classList.remove('hidden');this.classList.add('hidden')"
+                            class="flex-1 text-xs font-bold text-error-red border border-error-red py-1.5 rounded-lg hover:bg-error-red hover:text-white transition-all">Delete</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    } catch {}
+}
+
+async function toggleField(dishId, field, value) {
+    try {
+        const body = { user_id: parseInt(userId), dish_id: dishId };
+        body[field] = value;
+        // Get current dish values first
+        const res = await fetch(`${API}/restaurant/edit-dish`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (data.success) showToast('Updated', 'success');
+        else showToast(data.message, 'error');
+        fetchDishes();
+    } catch { showToast('Server error', 'error'); }
+}
+
+function editDish(id, name, desc, price, cal, available, outOfStock) {
+    editingDishId = id;
+    document.getElementById('dishName').value = name;
+    document.getElementById('dishDesc').value = desc;
+    document.getElementById('dishPrice').value = price;
+    document.getElementById('dishCalories').value = cal;
+    document.getElementById('dishAvailable').checked = available;
+    document.getElementById('dishOutOfStock').checked = outOfStock;
+    document.getElementById('formTitle').textContent = 'Edit Dish';
+    document.getElementById('formBtnText').textContent = 'Update Dish';
+    document.getElementById('cancelEditBtn').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelEdit() {
+    editingDishId = null;
+    document.getElementById('dishForm').reset();
+    document.getElementById('formTitle').textContent = 'Add New Dish';
+    document.getElementById('formBtnText').textContent = 'Add to Menu';
+    document.getElementById('cancelEditBtn').classList.add('hidden');
+}
+
+async function deleteDish(dishId) {
+    try {
+        const res = await fetch(`${API}/restaurant/dish/${dishId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: parseInt(userId) })
+        });
+        const data = await res.json();
+        if (data.success) { showToast('Dish deleted', 'success'); fetchDishes(); }
+        else showToast(data.message, 'error');
+    } catch { showToast('Server error', 'error'); }
+}
+
+document.getElementById('dishForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (editingDishId) {
+        try {
+            const res = await fetch(`${API}/restaurant/edit-dish`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: parseInt(userId),
+                    dish_id: editingDishId,
+                    name: document.getElementById('dishName').value,
+                    description: document.getElementById('dishDesc').value,
+                    price: document.getElementById('dishPrice').value,
+                    calories: document.getElementById('dishCalories').value,
+                    available: document.getElementById('dishAvailable').checked,
+                    out_of_stock: document.getElementById('dishOutOfStock').checked
+                })
+            });
+            const data = await res.json();
+            if (data.success) { showToast('Dish updated!', 'success'); cancelEdit(); fetchDishes(); }
+            else showToast(data.message, 'error');
+        } catch { showToast('Server error', 'error'); }
+    } else {
+        const formData = new FormData();
+        formData.append('user_id', userId);
+        formData.append('name', document.getElementById('dishName').value);
+        formData.append('description', document.getElementById('dishDesc').value);
+        formData.append('price', document.getElementById('dishPrice').value);
+        formData.append('calories', document.getElementById('dishCalories').value);
+        formData.append('available', document.getElementById('dishAvailable').checked);
+        formData.append('out_of_stock', document.getElementById('dishOutOfStock').checked);
+        const img = document.getElementById('dishImage').files[0];
+        if (img) formData.append('image', img);
+        try {
+            const res = await fetch(`${API}/restaurant/add-dish`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.success) { showToast('Dish added!', 'success'); document.getElementById('dishForm').reset(); fetchDishes(); }
+            else showToast(data.message, 'error');
+        } catch { showToast('Server error', 'error'); }
+    }
+});
+
+// ---- PROFILE ----
+async function fetchProfile() {
+    try {
+        const res = await fetch(`${API}/restaurant/profile?user_id=${userId}`);
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('profileName').value = data.data.name || '';
+            document.getElementById('profileDesc').value = data.data.description || '';
+            document.getElementById('profilePhone').value = data.data.phone || '';
+            document.getElementById('profileOpen').checked = !!data.data.is_open;
+        }
+    } catch {}
+}
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('name', document.getElementById('profileName').value);
+    formData.append('description', document.getElementById('profileDesc').value);
+    formData.append('phone', document.getElementById('profilePhone').value);
+    formData.append('is_open', document.getElementById('profileOpen').checked);
+    const img = document.getElementById('profileImage').files[0];
+    if (img) formData.append('image', img);
+    try {
+        const res = await fetch(`${API}/restaurant/update-profile`, { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) showToast('Profile updated!', 'success');
+        else showToast(data.message, 'error');
+    } catch { showToast('Server error', 'error'); }
+});
+
+// Init
+fetchStats();
+fetchOrders();
+pollInterval = setInterval(fetchOrders, 5000);
+</script>
+</body>
+</html>

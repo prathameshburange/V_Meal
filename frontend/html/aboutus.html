@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | V Meal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = { theme: { extend: { colors: {
+            "primary":"#FC8019","background":"#f9f9f9","surface":"#ffffff",
+            "outline":"#E9E9EB","secondary-text":"#686B78","success":"#60B246",
+        }}}}
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .kinetic-gradient { background: linear-gradient(135deg, #984800 0%, #FC8019 100%); }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-gray-800">
+
+<header class="fixed top-0 w-full z-50 bg-white border-b border-outline">
+    <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+        <img src="1766987781692.png" class="h-8 w-auto" alt="V Meal"/>
+        <div class="flex gap-4 text-sm font-medium">
+            <a href="login.html" class="text-secondary-text hover:text-primary transition-colors">Login</a>
+            <a href="signup.html" class="text-primary font-semibold hover:underline">Sign Up</a>
+        </div>
+    </div>
+</header>
+
+<main class="pt-24 pb-20 px-4">
+
+    <!-- Hero -->
+    <div class="max-w-3xl mx-auto text-center mb-16">
+        <img src="1766987781692.png" class="h-20 w-auto mx-auto mb-8" alt="V Meal"/>
+        <h1 class="text-4xl font-extrabold tracking-tight mb-4">About <span class="text-primary">V Meal</span></h1>
+        <p class="text-secondary-text text-lg max-w-xl mx-auto">The campus food ordering platform built exclusively for VIT students and faculty.</p>
+    </div>
+
+    <!-- About Card -->
+    <div class="max-w-3xl mx-auto bg-white rounded-3xl p-10 border border-outline mb-10 shadow-sm">
+        <p class="text-gray-700 leading-relaxed text-base">
+            V Meal is a campus-focused food ordering platform designed exclusively for university students and faculty.
+            Our goal is to simplify the process of ordering food from nearby restaurants while ensuring convenience,
+            transparency, and efficiency within the campus environment.
+        </p>
+        <p class="text-gray-700 leading-relaxed text-base mt-4">
+            By connecting students with trusted local eateries, V Meal allows users to browse menus, view nutritional
+            information, place orders, and track their status in real-time. The platform is tailored to address real
+            campus constraints, offering a structured and organized alternative to generic food delivery services.
+        </p>
+        <p class="text-gray-700 leading-relaxed text-base mt-4">
+            V Meal aims to enhance the student dining experience by combining technology, accessibility, and thoughtful
+            design — making food ordering smarter, faster, and more reliable for university communities.
+        </p>
+    </div>
+
+    <!-- Features -->
+    <div class="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mb-16">
+        <div class="bg-white border border-outline rounded-2xl p-6 text-center">
+            <span class="material-symbols-outlined text-primary text-4xl block mb-3">bolt</span>
+            <h3 class="font-bold text-lg mb-1">Fast Delivery</h3>
+            <p class="text-secondary-text text-sm">20–30 mins across campus</p>
+        </div>
+        <div class="bg-white border border-outline rounded-2xl p-6 text-center">
+            <span class="material-symbols-outlined text-primary text-4xl block mb-3">school</span>
+            <h3 class="font-bold text-lg mb-1">VIT Exclusive</h3>
+            <p class="text-secondary-text text-sm">Only for VIT students &amp; faculty</p>
+        </div>
+        <div class="bg-white border border-outline rounded-2xl p-6 text-center">
+            <span class="material-symbols-outlined text-primary text-4xl block mb-3">verified</span>
+            <h3 class="font-bold text-lg mb-1">Verified Partners</h3>
+            <p class="text-secondary-text text-sm">All restaurants vetted by admin</p>
+        </div>
+    </div>
+
+    <!-- Creators Section -->
+    <div class="max-w-3xl mx-auto mb-16">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-extrabold tracking-tight mb-2">Meet the Creators</h2>
+            <p class="text-secondary-text">The team behind V Meal</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            <!-- Creator 1 -->
+            <div class="bg-white border border-outline rounded-2xl p-6 flex items-start gap-4 shadow-sm hover:border-primary transition-colors">
+                <div class="w-14 h-14 rounded-2xl kinetic-gradient flex items-center justify-center flex-shrink-0">
+                    <span class="text-white font-black text-xl">P</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-base">Prathamesh</h3>
+                    <!-- <p class="text-xs text-primary font-semibold uppercase tracking-wider mb-1">Full Stack Developer</p>
+                    <p class="text-sm text-secondary-text">Led backend architecture, Flask APIs, and database design.</p> -->
+                    <p class="text-xs text-secondary-text mt-1">prathamesh.avinash2024@vitstudent.ac.in</p>
+                </div>
+            </div>
+
+            <!-- Creator 2 — Add your teammates here -->
+            <div class="bg-white border border-outline rounded-2xl p-6 flex items-start gap-4 shadow-sm hover:border-primary transition-colors">
+                <div class="w-14 h-14 rounded-2xl kinetic-gradient flex items-center justify-center flex-shrink-0">
+                    <span class="text-white font-black text-xl">A</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-base">Aaryan</h3>
+                    <!--<p class="text-xs text-primary font-semibold uppercase tracking-wider mb-1">Frontend Developer</p>
+                    <p class="text-sm text-secondary-text">Designed and built the user interface and experience.</p> -->
+                    <p class="text-xs text-secondary-text mt-1">aaryan.patel2024@vitstudent.ac.in</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- CTA -->
+    <div class="text-center">
+        <a href="signup.html"
+            class="inline-block kinetic-gradient text-white font-bold px-10 py-4 rounded-2xl text-base shadow-lg hover:opacity-90 transition-opacity">
+            Get Started →
+        </a>
+    </div>
+
+</main>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-xs">
+    <p>© 2026 VMeal. Crafted with care for campus cravings.</p>
+    <!-- <p class="mt-1">Made with ❤️ at VIT Chennai</p> -->
+</footer>
+
+</body>
+</html>

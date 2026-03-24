@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | V Meal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: {
+                "primary": "#FC8019", "background": "#f9f9f9", "surface": "#ffffff",
+                "surface-low": "#f3f3f4", "surface-container": "#eeeeee",
+                "on-surface": "#1a1c1c", "outline": "#E9E9EB",
+                "secondary-text": "#686B78", "success": "#60B246", "error-red": "#D83C3C",
+            }}}
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .kinetic-gradient { background: linear-gradient(135deg, #984800 0%, #FC8019 100%); }
+        .swiggy-shadow { box-shadow: 0 15px 40px -20px rgba(40,44,63,0.15); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface pb-32">
+
+<!-- NAVBAR -->
+<header class="sticky top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-outline">
+    <div class="flex justify-between items-center px-4 py-3 max-w-7xl mx-auto">
+        <div class="flex items-center gap-3">
+            <button onclick="window.location.href='dash.html'" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <img src="1766987781692.png" class="h-7 w-auto" alt="V Meal"/>
+        </div>
+        <div class="flex items-center gap-3">
+            <!-- Sort selector -->
+            <select id="sortSelect" onchange="changeSorting(this.value)"
+                class="text-sm border border-outline rounded-xl px-3 py-1.5 bg-surface-low text-on-surface outline-none focus:border-primary cursor-pointer font-medium">
+                <option value="default">Default</option>
+                <option value="price_asc">Price ↑</option>
+                <option value="price_desc">Price ↓</option>
+                <option value="calories_asc">Calories ↑</option>
+                <option value="calories_desc">Calories ↓</option>
+                <option value="popularity">Popular</option>
+            </select>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 pt-6">
+
+    <!-- Restaurant Hero -->
+    <section class="mb-8 p-6 bg-white rounded-3xl swiggy-shadow border border-outline">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h2 class="text-2xl font-extrabold text-on-surface mb-1" id="restName">Loading...</h2>
+                <p class="text-sm text-secondary-text font-medium" id="restDesc">Campus restaurant</p>
+                <p class="text-sm text-secondary-text mt-1" id="restPhone"></p>
+            </div>
+            <div class="bg-white border border-outline p-2 rounded-xl shadow-sm flex flex-col items-center">
+                <div class="flex items-center gap-1 text-success font-bold text-sm pb-1 border-b border-outline mb-1">
+                    <span class="material-symbols-outlined filled text-sm">star</span>
+                    <span id="restRating">—</span>
+                </div>
+                <span class="text-[9px] font-bold text-secondary-text uppercase tracking-widest" id="restReviewCount">Ratings</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-4 text-xs font-bold text-secondary-text">
+            <div class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span><span>20-30 MINS</span></div>
+            <div class="w-1 h-1 bg-outline rounded-full"></div>
+            <span id="restOpenStatus" class="font-bold text-success">Open</span>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <div class="flex items-center gap-3 mb-6">
+        <h3 class="text-lg font-black uppercase tracking-tight">Menu</h3>
+        <div class="h-px flex-grow bg-outline"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="dishGrid">
+        <div class="bg-white rounded-2xl p-4 border border-outline animate-pulse">
+            <div class="bg-surface-container aspect-[4/3] rounded-xl mb-4"></div>
+            <div class="h-4 bg-surface-container rounded w-3/4 mb-2"></div>
+            <div class="h-4 bg-surface-container rounded w-1/2"></div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <section class="mt-12 mb-8">
+        <h3 class="text-xl font-bold mb-6">Reviews & Ratings</h3>
+        <div id="reviewsContainer" class="space-y-4 mb-8"></div>
+
+        <!-- Submit Review -->
+        <div class="bg-surface-low border border-outline rounded-2xl p-6" id="reviewFormSection" style="display:none">
+            <h4 class="font-bold mb-4">Write a Review</h4>
+            <div class="flex gap-2 mb-4" id="starRating">
+                <button onclick="setRating(1)" class="star-btn text-3xl text-surface-container hover:text-yellow-400 transition-colors">★</button>
+                <button onclick="setRating(2)" class="star-btn text-3xl text-surface-container hover:text-yellow-400 transition-colors">★</button>
+                <button onclick="setRating(3)" class="star-btn text-3xl text-surface-container hover:text-yellow-400 transition-colors">★</button>
+                <button onclick="setRating(4)" class="star-btn text-3xl text-surface-container hover:text-yellow-400 transition-colors">★</button>
+                <button onclick="setRating(5)" class="star-btn text-3xl text-surface-container hover:text-yellow-400 transition-colors">★</button>
+            </div>
+            <textarea id="reviewComment" placeholder="Share your experience..." rows="3"
+                class="w-full p-3 border border-outline rounded-xl bg-white text-sm outline-none focus:border-primary mb-3 resize-none"></textarea>
+            <button onclick="submitReview()" class="kinetic-gradient text-white font-bold px-6 py-2.5 rounded-xl text-sm hover:opacity-90">Submit Review</button>
+        </div>
+    </section>
+</main>
+
+<!-- Cart Bar -->
+<div id="cartBar" class="fixed bottom-0 left-0 w-full z-50 bg-white border-t border-outline transform translate-y-full transition-transform duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+        <div class="kinetic-gradient text-white p-4 rounded-2xl flex items-center justify-between shadow-lg">
+            <div class="flex flex-col">
+                <span class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1" id="cartCount">0 ITEMS</span>
+                <span class="text-lg font-black" id="cartTotal">₹0</span>
+            </div>
+            <button onclick="placeOrder()" class="flex items-center gap-2 font-black uppercase tracking-widest text-sm bg-white/10 hover:bg-white/20 py-2 px-6 rounded-xl transition-all">
+                Place Order
+                <span class="material-symbols-outlined text-lg">shopping_cart_checkout</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+const API = 'http://127.0.0.1:5000';
+
+const urlParams = new URLSearchParams(window.location.search);
+const restaurantId = urlParams.get('id');
+if (!restaurantId) window.location.href = 'dash.html';
+
+const userId = localStorage.getItem('user_id');
+let selectedRating = 0;
+
+// Dark mode
+if (localStorage.getItem('darkMode') === '1') document.getElementById('htmlRoot').classList.add('dark');
+
+function showToast(msg, type='info') {
+    const existing = document.querySelector('.vmeal-toast');
+    if (existing) existing.remove();
+    const colors = { success:'#60B246', error:'#D83C3C', info:'#FC8019' };
+    const t = document.createElement('div');
+    t.className = 'vmeal-toast';
+    t.textContent = msg;
+    t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]};color:white;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:99999;opacity:1;transition:opacity 0.4s;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,0.15);font-family:'Inter',sans-serif;`;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; }, 2600);
+    setTimeout(() => { t.remove(); }, 3000);
+}
+
+// ---- CART (multi-restaurant support) ----
+// Cart stored as: { restaurant_id: { items: {dish_id: {name,price,quantity}}, restaurantName } }
+let globalCart = JSON.parse(localStorage.getItem('vmeal_cart') || '{}');
+
+function saveCart() {
+    localStorage.setItem('vmeal_cart', JSON.stringify(globalCart));
+}
+
+function getRestaurantCart() {
+    if (!globalCart[restaurantId]) {
+        globalCart[restaurantId] = { items: {}, restaurantName: '' };
+    }
+    return globalCart[restaurantId];
+}
+
+function addToCart(dishId, name, price) {
+    const cart = getRestaurantCart();
+    if (cart.items[dishId]) cart.items[dishId].quantity++;
+    else cart.items[dishId] = { name, price: parseFloat(price), quantity: 1 };
+    saveCart();
+    updateCartUI(dishId);
+}
+
+function removeFromCart(dishId) {
+    const cart = getRestaurantCart();
+    if (!cart.items[dishId]) return;
+    cart.items[dishId].quantity--;
+    if (cart.items[dishId].quantity <= 0) delete cart.items[dishId];
+    saveCart();
+    updateCartUI(dishId);
+}
+
+function updateCartUI(dishId) {
+    const cart = getRestaurantCart();
+    const item = cart.items[dishId];
+    const ctrl = document.getElementById(`ctrl-${dishId}`);
+
+    if (ctrl) {
+        if (item && item.quantity > 0) {
+            ctrl.innerHTML = `
+            <div class="w-full flex items-center justify-between border-2 border-primary rounded-xl overflow-hidden">
+                <button onclick="removeFromCart(${dishId})" class="text-primary text-xl font-black px-4 py-2 hover:bg-primary/5">−</button>
+                <span class="font-black text-primary">${item.quantity}</span>
+                <button onclick="addToCart(${dishId},'${item.name.replace(/'/g,"\\'")}',${item.price})" class="text-primary text-xl font-black px-4 py-2 hover:bg-primary/5">+</button>
+            </div>`;
+        } else {
+            ctrl.innerHTML = `
+            <button onclick="addToCart(${dishId},'${item ? item.name.replace(/'/g,"\\'") : ''}',0)"
+                class="w-full py-3 bg-white border border-primary text-primary font-black rounded-xl hover:bg-primary hover:text-white transition-all uppercase text-xs tracking-widest flex items-center justify-center gap-2">
+                Add to Cart <span class="material-symbols-outlined text-sm">add</span>
+            </button>`;
+        }
+    }
+
+    // Update cart bar
+    const allItems = Object.values(getRestaurantCart().items);
+    const total = allItems.reduce((s, i) => s + i.price * i.quantity, 0);
+    const count = allItems.reduce((s, i) => s + i.quantity, 0);
+    document.getElementById('cartCount').textContent = `${count} ITEM${count !== 1 ? 'S' : ''}`;
+    document.getElementById('cartTotal').textContent = `₹${total.toFixed(0)}`;
+    const bar = document.getElementById('cartBar');
+    count > 0 ? bar.classList.remove('translate-y-full') : bar.classList.add('translate-y-full');
+}
+
+// ---- FETCH MENU ----
+let currentSort = 'default';
+
+async function fetchMenu(sort = 'default') {
+    currentSort = sort;
+    try {
+        const res = await fetch(`${API}/dishes/${restaurantId}?sort=${sort}`);
+        const data = await res.json();
+        if (!data.success) { showToast('Restaurant not found', 'error'); return; }
+
+        const { restaurant, dishes } = data.data;
+        document.getElementById('restName').textContent = restaurant.name;
+        document.getElementById('restDesc').textContent = restaurant.description || 'Campus restaurant';
+        document.title = `${restaurant.name} | V Meal`;
+
+        if (restaurant.phone) {
+            document.getElementById('restPhone').textContent = `📞 ${restaurant.phone}`;
+        }
+
+        document.getElementById('restRating').textContent = restaurant.avg_rating > 0 ? restaurant.avg_rating : '—';
+        document.getElementById('restReviewCount').textContent = `${restaurant.review_count || 0} Ratings`;
+        document.getElementById('restOpenStatus').textContent = restaurant.is_open ? 'Open Now' : 'Closed';
+        document.getElementById('restOpenStatus').className = restaurant.is_open ? 'font-bold text-success' : 'font-bold text-gray-400';
+
+        // Update restaurant name in cart
+        getRestaurantCart().restaurantName = restaurant.name;
+        saveCart();
+
+        renderDishes(dishes);
+        fetchReviews();
+    } catch {
+        showToast('Could not load menu. Is Flask running?', 'error');
+    }
+}
+
+function renderDishes(dishes) {
+    const grid = document.getElementById('dishGrid');
+    if (!dishes.length) {
+        grid.innerHTML = `<div class="col-span-3 text-center py-16 text-secondary-text">No dishes available.</div>`;
+        return;
+    }
+
+    const cartItems = getRestaurantCart().items;
+
+    grid.innerHTML = dishes.map(d => {
+        const img = d.image ? `${API}/${d.image}` : `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop`;
+        const isOOS = d.out_of_stock;
+        const inCart = cartItems[d.dish_id];
+
+        const cartControl = isOOS
+            ? `<div class="w-full py-3 bg-gray-100 text-gray-400 font-black rounded-xl uppercase text-xs tracking-widest text-center">Out of Stock</div>`
+            : inCart && inCart.quantity > 0
+            ? `<div class="w-full flex items-center justify-between border-2 border-primary rounded-xl overflow-hidden">
+                    <button onclick="removeFromCart(${d.dish_id})" class="text-primary text-xl font-black px-4 py-2 hover:bg-primary/5">−</button>
+                    <span class="font-black text-primary">${inCart.quantity}</span>
+                    <button onclick="addToCart(${d.dish_id},'${d.name.replace(/'/g,"\\'")}',${d.price})" class="text-primary text-xl font-black px-4 py-2 hover:bg-primary/5">+</button>
+               </div>`
+            : `<button onclick="addToCart(${d.dish_id},'${d.name.replace(/'/g,"\\'")}',${d.price})"
+                class="w-full py-3 bg-white border border-primary text-primary font-black rounded-xl hover:bg-primary hover:text-white transition-all uppercase text-xs tracking-widest flex items-center justify-center gap-2">
+                Add to Cart <span class="material-symbols-outlined text-sm">add</span>
+               </button>`;
+
+        return `
+        <div class="bg-white rounded-2xl p-4 swiggy-shadow border border-outline flex flex-col ${isOOS ? 'opacity-70' : ''}">
+            <div class="relative w-full aspect-[4/3] mb-4">
+                <img src="${img}" alt="${d.name}" class="w-full h-full object-cover rounded-xl"
+                    onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop'"/>
+                ${isOOS ? `<div class="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
+                    <span class="bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">Out of Stock</span>
+                </div>` : ''}
+                ${d.order_count > 10 ? `<span class="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Popular</span>` : ''}
+            </div>
+            <div class="flex-grow">
+                <div class="flex justify-between items-start mb-1 gap-2">
+                    <h4 class="font-bold text-on-surface text-base leading-tight">${d.name}</h4>
+                    <span class="text-primary font-black text-sm whitespace-nowrap">₹${parseFloat(d.price).toFixed(0)}</span>
+                </div>
+                ${d.calories ? `<span class="text-[10px] font-bold px-2 py-0.5 bg-surface-container text-secondary-text rounded-full mb-2 inline-block uppercase">${d.calories} Cal</span>` : ''}
+                <p class="text-sm text-secondary-text leading-snug line-clamp-2 mt-1 mb-4">${d.description || ''}</p>
+            </div>
+            <div id="ctrl-${d.dish_id}">${cartControl}</div>
+        </div>`;
+    }).join('');
+}
+
+function changeSorting(value) {
+    fetchMenu(value);
+}
+
+// ---- PLACE ORDER (multi-restaurant) ----
+async function placeOrder() {
+    const cartItems = getRestaurantCart().items;
+    const items = Object.entries(cartItems).map(([id, item]) => ({
+        dish_id: parseInt(id),
+        quantity: item.quantity
+    }));
+
+    if (!items.length) return;
+
+    // Build items_by_restaurant format
+    const itemsByRestaurant = {};
+    itemsByRestaurant[restaurantId] = items;
+
+    try {
+        const res = await fetch(`${API}/order/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                student_id: parseInt(userId),
+                items_by_restaurant: itemsByRestaurant
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            // Clear this restaurant's cart
+            delete globalCart[restaurantId];
+            saveCart();
+            showToast('Order placed!', 'success');
+            setTimeout(() => {
+                window.location.href = `order_tracking.html?id=${data.order_ids[0]}`;
+            }, 1000);
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch {
+        showToast('Could not place order. Is Flask running?', 'error');
+    }
+}
+
+// ---- REVIEWS ----
+async function fetchReviews() {
+    try {
+        const res = await fetch(`${API}/reviews/${restaurantId}`);
+        const data = await res.json();
+        const container = document.getElementById('reviewsContainer');
+
+        if (!data.success || !data.data.length) {
+            container.innerHTML = `<p class="text-secondary-text text-sm">No reviews yet. Be the first to review!</p>`;
+        } else {
+            container.innerHTML = data.data.map(r => `
+            <div class="bg-white border border-outline rounded-2xl p-5">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="font-bold text-sm">${r.user_name}</p>
+                    <div class="flex gap-0.5">
+                        ${'★'.repeat(r.rating)}<span class="text-surface-container">${'★'.repeat(5-r.rating)}</span>
+                    </div>
+                </div>
+                <p class="text-sm text-secondary-text">${r.comment || ''}</p>
+                <p class="text-xs text-secondary-text/60 mt-2">${new Date(r.created_at).toLocaleDateString('en-IN')}</p>
+            </div>`).join('');
+        }
+
+        // Show review form if logged in
+        if (userId) document.getElementById('reviewFormSection').style.display = 'block';
+    } catch {}
+}
+
+function setRating(n) {
+    selectedRating = n;
+    document.querySelectorAll('.star-btn').forEach((btn, i) => {
+        btn.style.color = i < n ? '#facc15' : '#eeeeee';
+    });
+}
+
+async function submitReview() {
+    if (!selectedRating) { showToast('Please select a rating', 'error'); return; }
+    const comment = document.getElementById('reviewComment').value.trim();
+    try {
+        const res = await fetch(`${API}/review`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: parseInt(userId),
+                restaurant_id: parseInt(restaurantId),
+                rating: selectedRating,
+                comment
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast('Review submitted!', 'success');
+            document.getElementById('reviewComment').value = '';
+            setRating(0);
+            fetchReviews();
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch { showToast('Server error', 'error'); }
+}
+
+// Init
+fetchMenu();
+// Update cart bar on load
+const initItems = Object.values(getRestaurantCart().items);
+if (initItems.length > 0) {
+    const total = initItems.reduce((s,i) => s + i.price * i.quantity, 0);
+    const count = initItems.reduce((s,i) => s + i.quantity, 0);
+    document.getElementById('cartCount').textContent = `${count} ITEM${count !== 1 ? 'S' : ''}`;
+    document.getElementById('cartTotal').textContent = `₹${total.toFixed(0)}`;
+    document.getElementById('cartBar').classList.remove('translate-y-full');
+}
+</script>
+</body>
+</html>

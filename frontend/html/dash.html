@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V Meal | Explore</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FC8019",
+                        "primary-dark": "#984800",
+                        "background": "#f9f9f9",
+                        "surface": "#ffffff",
+                        "surface-low": "#f3f3f4",
+                        "surface-container": "#eeeeee",
+                        "on-surface": "#1a1c1c",
+                        "on-surface-variant": "#574236",
+                        "outline": "#E9E9EB",
+                        "secondary-text": "#686B78",
+                        "success": "#60B246",
+                        "error-red": "#D83C3C",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .kinetic-gradient { background: linear-gradient(135deg, #984800 0%, #FC8019 100%); }
+        .kinetic-shadow { box-shadow: 0 4px 24px rgba(152,72,0,0.08); }
+        .swiggy-shadow { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { font-family: 'Inter', sans-serif; }
+        /* Dark mode overrides */
+        .dark body { background: #111 !important; color: #f3f3f3; }
+        .dark .bg-white { background-color: #1e1e1e !important; }
+        .dark .bg-surface-low { background-color: #181818 !important; }
+        .dark .text-on-surface { color: #f3f3f3; }
+        .dark .border-outline { border-color: #333; }
+        .dark .bg-surface-container { background-color: #252525; }
+        .dark .text-secondary-text { color: #aaa; }
+        #searchSuggestions { position: absolute; top: 100%; left: 0; right: 0; z-index: 100; }
+    </style>
+</head>
+<body class="bg-background text-on-surface pb-24">
+
+<!-- NAVBAR -->
+<header class="fixed top-0 w-full z-50 bg-white dark:bg-zinc-900 border-b border-outline">
+    <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+        <div class="flex items-center gap-3">
+            <img src="1766987781692.png" class="h-8 w-auto" alt="V Meal"/>
+        </div>
+        <div class="flex items-center gap-4">
+            <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+                <a href="dash.html" class="text-primary font-bold">Explore</a>
+                <a href="orders.html" class="text-secondary-text hover:text-primary transition-colors">Orders</a>
+                <a href="user.html" class="text-secondary-text hover:text-primary transition-colors">Account</a>
+                <a href="support.html" class="text-secondary-text hover:text-primary transition-colors">Support</a>
+            </nav>
+            <!-- Dark mode toggle -->
+            <button id="darkToggle" onclick="toggleDark()"
+                class="p-2 rounded-xl border border-outline hover:bg-surface-low transition-colors">
+                <span class="material-symbols-outlined text-xl" id="darkIcon">dark_mode</span>
+            </button>
+            <button onclick="logout()" class="hidden md:flex items-center gap-1 text-sm text-secondary-text hover:text-red-500 transition-colors font-medium">
+                <span class="material-symbols-outlined text-base">logout</span>
+            </button>
+            <div class="w-9 h-9 rounded-full bg-surface-container overflow-hidden flex items-center justify-center border-2 border-primary/20">
+                <span class="material-symbols-outlined text-secondary-text">person</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="pt-20 px-4 max-w-7xl mx-auto">
+
+    <!-- Welcome -->
+    <section class="mt-6 mb-4">
+        <p class="text-secondary-text text-sm font-medium">Good day,</p>
+        <h1 class="text-2xl font-black text-on-surface" id="welcomeName">Student</h1>
+    </section>
+
+    <!-- Stats Row -->
+    <section class="grid grid-cols-3 gap-3 mb-6">
+        <div class="bg-white dark:bg-zinc-800 rounded-2xl p-4 border border-outline swiggy-shadow text-center">
+            <p class="text-2xl font-black text-primary" id="statTotal">—</p>
+            <p class="text-xs text-secondary-text font-semibold mt-1">Orders</p>
+        </div>
+        <div class="bg-white dark:bg-zinc-800 rounded-2xl p-4 border border-outline swiggy-shadow text-center">
+            <p class="text-2xl font-black text-success" id="statCompleted">—</p>
+            <p class="text-xs text-secondary-text font-semibold mt-1">Done</p>
+        </div>
+        <div class="bg-white dark:bg-zinc-800 rounded-2xl p-4 border border-outline swiggy-shadow text-center">
+            <p class="text-2xl font-black text-primary" id="statSpent">—</p>
+            <p class="text-xs text-secondary-text font-semibold mt-1">Spent ₹</p>
+        </div>
+    </section>
+
+    <!-- Search Bar with Suggestions -->
+    <section class="mb-6 relative">
+        <div class="relative">
+            <i><input id="searchInput" type="text" placeholder="Biryani? Burger? Both?"
+                class="w-full px-5 py-4 pr-12 bg-white dark:bg-zinc-800 rounded-2xl border border-outline swiggy-shadow focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-on-surface placeholder:text-secondary-text/60 font-medium"/></i>
+            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text">search</span>
+        </div>
+        <!-- Suggestions dropdown -->
+        <div id="searchSuggestions" class="hidden bg-white dark:bg-zinc-800 border border-outline rounded-2xl shadow-lg overflow-hidden mt-1">
+            <div id="suggestionsList"></div>
+        </div>
+    </section>
+
+    <!-- Offer Banner -->
+    <section class="mb-8">
+        <div class="relative overflow-hidden rounded-3xl h-40 kinetic-gradient p-8 flex flex-col justify-center kinetic-shadow">
+            <span class="bg-white/20 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block w-fit">VIT Campus Only</span>
+            <h2 class="text-2xl font-black text-white leading-tight">Campus Food,<br/>Delivered Fast ⚡</h2>
+            <span class="absolute right-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-white opacity-10 filled" style="font-size:90px;">local_fire_department</span>
+        </div>
+    </section>
+
+    <!-- What's on your mind — category filter -->
+    <section class="mb-8">
+        <h3 class="text-xl font-bold tracking-tight mb-4">What's on your mind?</h3>
+        <div class="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+            <div class="flex-none flex flex-col items-center gap-2 cursor-pointer group" onclick="filterByCategory('all')">
+                <div class="w-20 h-20 rounded-full bg-white dark:bg-zinc-800 swiggy-shadow p-1 group-hover:scale-105 transition-transform border-2 border-transparent group-hover:border-primary overflow-hidden" id="cat-all">
+                    <div class="w-full h-full rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-2xl filled">restaurant</span>
+                    </div>
+                </div>
+                <span class="text-xs font-semibold">All</span>
+            </div>
+            <div class="flex-none flex flex-col items-center gap-2 cursor-pointer group" onclick="filterByCategory('pizza')">
+                <div class="w-20 h-20 rounded-full bg-white dark:bg-zinc-800 swiggy-shadow p-1 group-hover:scale-105 transition-transform border-2 border-transparent group-hover:border-primary overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=80&h=80&fit=crop" class="w-full h-full object-cover rounded-full" alt="Pizza"/>
+                </div>
+                <span class="text-xs font-semibold">Pizza</span>
+            </div>
+            <div class="flex-none flex flex-col items-center gap-2 cursor-pointer group" onclick="filterByCategory('burger')">
+                <div class="w-20 h-20 rounded-full bg-white dark:bg-zinc-800 swiggy-shadow p-1 group-hover:scale-105 transition-transform border-2 border-transparent group-hover:border-primary overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=80&h=80&fit=crop" class="w-full h-full object-cover rounded-full" alt="Burger"/>
+                </div>
+                <span class="text-xs font-semibold">Burgers</span>
+            </div>
+            <div class="flex-none flex flex-col items-center gap-2 cursor-pointer group" onclick="filterByCategory('healthy')">
+                <div class="w-20 h-20 rounded-full bg-white dark:bg-zinc-800 swiggy-shadow p-1 group-hover:scale-105 transition-transform border-2 border-transparent group-hover:border-primary overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=80&h=80&fit=crop" class="w-full h-full object-cover rounded-full" alt="Healthy"/>
+                </div>
+                <span class="text-xs font-semibold">Healthy</span>
+            </div>
+            <div class="flex-none flex flex-col items-center gap-2 cursor-pointer group" onclick="filterByCategory('chinese')">
+                <div class="w-20 h-20 rounded-full bg-white dark:bg-zinc-800 swiggy-shadow p-1 group-hover:scale-105 transition-transform border-2 border-transparent group-hover:border-primary overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=80&h=80&fit=crop" class="w-full h-full object-cover rounded-full" alt="Chinese"/>
+                </div>
+                <span class="text-xs font-semibold">Chinese</span>
+            </div>
+            <div class="flex-none flex flex-col items-center gap-2 cursor-pointer group" onclick="filterByCategory('dessert')">
+                <div class="w-20 h-20 rounded-full bg-white dark:bg-zinc-800 swiggy-shadow p-1 group-hover:scale-105 transition-transform border-2 border-transparent group-hover:border-primary overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?w=80&h=80&fit=crop" class="w-full h-full object-cover rounded-full" alt="Desserts"/>
+                </div>
+                <span class="text-xs font-semibold">Desserts</span>
+            </div>
+            <div class="flex-none flex flex-col items-center gap-2 cursor-pointer group" onclick="filterByCategory('biryani')">
+                <div class="w-20 h-20 rounded-full bg-white dark:bg-zinc-800 swiggy-shadow p-1 group-hover:scale-105 transition-transform border-2 border-transparent group-hover:border-primary overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=80&h=80&fit=crop" class="w-full h-full object-cover rounded-full" alt="Biryani"/>
+                </div>
+                <span class="text-xs font-semibold">Biryani</span>
+            </div>
+        </div>
+    </section>
+
+    <hr class="border-outline mb-8"/>
+
+    <!-- Active category display -->
+    <div id="activeCategoryBadge" class="hidden mb-4 flex items-center gap-2">
+        <span class="bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-bold" id="activeCategoryText"></span>
+        <button onclick="filterByCategory('all')" class="text-secondary-text text-sm hover:text-red-500 transition-colors">✕ Clear</button>
+    </div>
+
+    <!-- Restaurant Grid -->
+    <section class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-black tracking-tighter uppercase">Top Restaurants</h3>
+            <button onclick="fetchRestaurants()" class="text-primary font-bold text-sm flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">refresh</span> Refresh
+            </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="restaurantGrid">
+            <div class="animate-pulse"><div class="bg-surface-container h-48 rounded-2xl mb-4"></div><div class="h-4 bg-surface-container rounded w-3/4 mb-2"></div><div class="h-4 bg-surface-container rounded w-1/2"></div></div>
+            <div class="animate-pulse"><div class="bg-surface-container h-48 rounded-2xl mb-4"></div><div class="h-4 bg-surface-container rounded w-3/4 mb-2"></div><div class="h-4 bg-surface-container rounded w-1/2"></div></div>
+            <div class="animate-pulse"><div class="bg-surface-container h-48 rounded-2xl mb-4"></div><div class="h-4 bg-surface-container rounded w-3/4 mb-2"></div><div class="h-4 bg-surface-container rounded w-1/2"></div></div>
+            <div class="animate-pulse"><div class="bg-surface-container h-48 rounded-2xl mb-4"></div><div class="h-4 bg-surface-container rounded w-3/4 mb-2"></div><div class="h-4 bg-surface-container rounded w-1/2"></div></div>
+        </div>
+    </section>
+</main>
+
+<!-- Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center pb-6 pt-3 px-4 bg-white dark:bg-zinc-900 border-t border-outline z-50">
+    <a href="dash.html" class="flex flex-col items-center text-primary">
+        <span class="material-symbols-outlined filled text-xl">explore</span>
+        <span class="text-[10px] font-bold mt-1 uppercase">Explore</span>
+    </a>
+    <a href="orders.html" class="flex flex-col items-center text-secondary-text">
+        <span class="material-symbols-outlined text-xl">receipt_long</span>
+        <span class="text-[10px] font-bold mt-1 uppercase">Orders</span>
+    </a>
+    <a href="user.html" class="flex flex-col items-center text-secondary-text">
+        <span class="material-symbols-outlined text-xl">person</span>
+        <span class="text-[10px] font-bold mt-1 uppercase">Account</span>
+    </a>
+    <a href="support.html" class="flex flex-col items-center text-secondary-text">
+        <span class="material-symbols-outlined text-xl">support_agent</span>
+        <span class="text-[10px] font-bold mt-1 uppercase">Support</span>
+    </a>
+</nav>
+
+<script>
+const API = 'http://127.0.0.1:5000';
+
+// ---- DARK MODE ----
+function toggleDark() {
+    const html = document.getElementById('htmlRoot');
+    const isDark = html.classList.toggle('dark');
+    localStorage.setItem('darkMode', isDark ? '1' : '0');
+    document.getElementById('darkIcon').textContent = isDark ? 'light_mode' : 'dark_mode';
+}
+(function initDark() {
+    if (localStorage.getItem('darkMode') === '1') {
+        document.getElementById('htmlRoot').classList.add('dark');
+        document.getElementById('darkIcon').textContent = 'light_mode';
+    }
+})();
+
+// ---- AUTH ----
+const role = localStorage.getItem('user_role');
+if (!role || !['student','faculty'].includes(role)) window.location.href = 'login.html';
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+const userId = localStorage.getItem('user_id');
+document.getElementById('welcomeName').textContent = localStorage.getItem('user_name') || 'Student';
+
+// ---- TOAST ----
+function showToast(msg, type='info') {
+    const existing = document.querySelector('.vmeal-toast');
+    if (existing) existing.remove();
+    const colors = { success:'#60B246', error:'#D83C3C', info:'#FC8019' };
+    const t = document.createElement('div');
+    t.className = 'vmeal-toast';
+    t.textContent = msg;
+    t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]};color:white;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:99999;opacity:1;transition:opacity 0.4s;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,0.15);font-family:'Inter',sans-serif;`;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity='0'; }, 2600);
+    setTimeout(() => { t.remove(); }, 3000);
+}
+
+// ---- STATS ----
+async function fetchStats() {
+    try {
+        const res = await fetch(`${API}/student/stats/${userId}`);
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('statTotal').textContent = data.data.total_orders;
+            document.getElementById('statCompleted').textContent = data.data.completed_orders;
+            document.getElementById('statSpent').textContent = `₹${Math.round(data.data.total_spent)}`;
+        }
+    } catch {}
+}
+
+// ---- RESTAURANTS ----
+let allRestaurants = [];
+let activeCategory = 'all';
+
+async function fetchRestaurants() {
+    const grid = document.getElementById('restaurantGrid');
+    grid.innerHTML = `<div class="animate-pulse col-span-4"><div class="bg-surface-container h-48 rounded-2xl mb-4"></div></div>`;
+    try {
+        const res = await fetch(`${API}/restaurants`);
+        const data = await res.json();
+        if (data.success) {
+            allRestaurants = data.data;
+            applyFilters();
+        }
+    } catch {
+        grid.innerHTML = `<p class="col-span-4 text-center py-12 text-secondary-text">Could not load restaurants. Is Flask running?</p>`;
+    }
+}
+
+function filterByCategory(cat) {
+    activeCategory = cat;
+    const badge = document.getElementById('activeCategoryBadge');
+    if (cat === 'all') {
+        badge.classList.add('hidden');
+    } else {
+        badge.classList.remove('hidden');
+        document.getElementById('activeCategoryText').textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+    }
+    applyFilters();
+}
+
+function applyFilters() {
+    let filtered = [...allRestaurants];
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    if (q) {
+        filtered = filtered.filter(r =>
+            r.name.toLowerCase().includes(q) || (r.description||'').toLowerCase().includes(q)
+        );
+    }
+    if (activeCategory !== 'all') {
+        filtered = filtered.filter(r =>
+            r.name.toLowerCase().includes(activeCategory) ||
+            (r.description||'').toLowerCase().includes(activeCategory)
+        );
+    }
+    renderRestaurants(filtered);
+}
+
+function renderRestaurants(list) {
+    const grid = document.getElementById('restaurantGrid');
+    if (!list.length) {
+        grid.innerHTML = `<p class="col-span-4 text-center py-12 text-secondary-text font-medium">No restaurants found.</p>`;
+        return;
+    }
+    grid.innerHTML = list.map(r => {
+        const img = r.image ? `${API}/${r.image}` : `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop`;
+        const rating = r.avg_rating > 0 ? r.avg_rating : '4.3';
+        return `
+        <div class="group cursor-pointer transform transition-transform hover:scale-[0.98]" onclick="window.location.href='menu.html?id=${r.restaurant_id}'">
+            <div class="relative aspect-[4/3] rounded-2xl overflow-hidden mb-3 swiggy-shadow bg-surface-container">
+                <img src="${img}" alt="${r.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onerror="this.src='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop'"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                <span class="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-2 py-0.5 rounded text-[11px] font-black uppercase">20-30 min</span>
+                <span class="absolute top-3 right-3 ${r.is_open ? 'bg-success' : 'bg-gray-500'} text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase">
+                    ${r.is_open ? 'Open' : 'Closed'}
+                </span>
+                ${!r.is_open ? '<div class="absolute inset-0 bg-black/30"></div>' : ''}
+            </div>
+            <div class="px-1">
+                <div class="flex justify-between items-start mb-1">
+                    <h4 class="text-base font-bold text-on-surface group-hover:text-primary transition-colors leading-tight">${r.name}</h4>
+                    <div class="flex items-center gap-0.5 bg-success text-white px-1.5 py-0.5 rounded text-xs font-bold flex-shrink-0 ml-2">
+                        <span class="material-symbols-outlined filled text-[10px]">star</span>
+                        <span>${rating}</span>
+                    </div>
+                </div>
+                <p class="text-secondary-text text-sm font-medium truncate mb-3">${r.description || 'Campus restaurant'}</p>
+                <button class="w-full py-2.5 bg-white dark:bg-zinc-800 border border-primary text-primary font-bold text-sm rounded-xl hover:bg-primary hover:text-white transition-colors">
+                    View Menu
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ---- SEARCH WITH SUGGESTIONS ----
+let searchTimeout;
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    const q = e.target.value.trim();
+    applyFilters();
+    if (q.length < 2) {
+        document.getElementById('searchSuggestions').classList.add('hidden');
+        return;
+    }
+    searchTimeout = setTimeout(() => fetchSuggestions(q), 300);
+});
+
+document.getElementById('searchInput').addEventListener('blur', () => {
+    setTimeout(() => document.getElementById('searchSuggestions').classList.add('hidden'), 200);
+});
+
+async function fetchSuggestions(q) {
+    try {
+        const res = await fetch(`${API}/search?q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (!data.success) return;
+
+        const { restaurants, dishes } = data.data;
+        const list = document.getElementById('suggestionsList');
+
+        if (!restaurants.length && !dishes.length) {
+            document.getElementById('searchSuggestions').classList.add('hidden');
+            return;
+        }
+
+        let html = '';
+        if (restaurants.length) {
+            html += `<div class="px-4 py-2 text-xs font-bold uppercase tracking-widest text-secondary-text bg-surface-low">Restaurants</div>`;
+            html += restaurants.map(r => `
+                <div class="flex items-center gap-3 px-4 py-3 hover:bg-surface-low cursor-pointer border-b border-outline" onclick="window.location.href='menu.html?id=${r.restaurant_id}'">
+                    <span class="material-symbols-outlined text-primary">storefront</span>
+                    <div>
+                        <p class="font-semibold text-sm">${r.name}</p>
+                        <p class="text-xs text-secondary-text">${r.description || ''}</p>
+                    </div>
+                </div>`).join('');
+        }
+        if (dishes.length) {
+            html += `<div class="px-4 py-2 text-xs font-bold uppercase tracking-widest text-secondary-text bg-surface-low">Dishes</div>`;
+            html += dishes.map(d => `
+                <div class="flex items-center gap-3 px-4 py-3 hover:bg-surface-low cursor-pointer border-b border-outline last:border-0" onclick="window.location.href='menu.html?id=${d.restaurant_id}'">
+                    <span class="material-symbols-outlined text-primary">restaurant</span>
+                    <div>
+                        <p class="font-semibold text-sm">${d.name} <span class="text-primary font-bold">₹${parseFloat(d.price).toFixed(0)}</span></p>
+                        <p class="text-xs text-secondary-text">${d.restaurant_name}</p>
+                    </div>
+                </div>`).join('');
+        }
+
+        list.innerHTML = html;
+        document.getElementById('searchSuggestions').classList.remove('hidden');
+    } catch {}
+}
+
+fetchRestaurants();
+fetchStats();
+</script>
+</body>
+</html>

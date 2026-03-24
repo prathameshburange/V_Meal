@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="light" lang="en" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | V Meal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: {
+                "primary": "#FC8019", "background": "#f9f9f9", "surface": "#ffffff",
+                "surface-container": "#eeeeee", "on-surface": "#1a1c1c",
+                "outline": "#E9E9EB", "secondary-text": "#686B78",
+                "success": "#60B246", "error-red": "#D83C3C",
+            }}}
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .kinetic-gradient { background: linear-gradient(135deg, #984800 0%, #FC8019 100%); }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface pb-24">
+
+<header class="fixed top-0 w-full z-50 bg-white border-b border-outline">
+    <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+        <div class="flex items-center gap-3">
+            <button onclick="window.location.href='dash.html'" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <img src="1766987781692.png" class="h-7 w-auto" alt="V Meal"/>
+        </div>
+        <button onclick="logout()" class="flex items-center gap-1 text-sm text-secondary-text hover:text-error-red transition-colors font-medium">
+            <span class="material-symbols-outlined text-base">logout</span> Logout
+        </button>
+    </div>
+</header>
+
+<main class="pt-24 px-4 max-w-2xl mx-auto">
+
+    <!-- Profile Card -->
+    <div class="bg-white border border-outline rounded-3xl p-8 mb-6 flex items-center gap-6 shadow-sm">
+        <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary filled" style="font-size:40px;">person</span>
+        </div>
+        <div>
+            <h1 class="text-2xl font-extrabold mb-1" id="profileName">—</h1>
+            <p class="text-secondary-text text-sm mb-2" id="profileEmail">—</p>
+            <span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-primary/10 text-primary" id="profileRole">—</span>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div class="bg-white border border-outline rounded-2xl p-5 text-center shadow-sm">
+            <p class="text-3xl font-black text-primary" id="statTotal">—</p>
+            <p class="text-xs text-secondary-text font-semibold mt-1 uppercase tracking-wider">Orders</p>
+        </div>
+        <div class="bg-white border border-outline rounded-2xl p-5 text-center shadow-sm">
+            <p class="text-3xl font-black text-success" id="statCompleted">—</p>
+            <p class="text-xs text-secondary-text font-semibold mt-1 uppercase tracking-wider">Completed</p>
+        </div>
+        <div class="bg-white border border-outline rounded-2xl p-5 text-center shadow-sm">
+            <p class="text-3xl font-black text-on-surface" id="statActive">—</p>
+            <p class="text-xs text-secondary-text font-semibold mt-1 uppercase tracking-wider">Active</p>
+        </div>
+        <div class="bg-white border border-outline rounded-2xl p-5 text-center shadow-sm border-l-4 border-l-primary">
+            <p class="text-2xl font-black text-primary" id="statSpent">—</p>
+            <p class="text-xs text-secondary-text font-semibold mt-1 uppercase tracking-wider">Total Spent</p>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 gap-3 mb-8">
+        <a href="orders.html"
+            class="bg-white border border-outline rounded-2xl p-5 flex items-center gap-3 hover:border-primary transition-all group">
+            <span class="material-symbols-outlined text-primary text-2xl group-hover:filled">receipt_long</span>
+            <div>
+                <p class="font-bold text-sm">My Orders</p>
+                <p class="text-xs text-secondary-text">View all orders</p>
+            </div>
+        </a>
+        <a href="support.html"
+            class="bg-white border border-outline rounded-2xl p-5 flex items-center gap-3 hover:border-primary transition-all group">
+            <span class="material-symbols-outlined text-primary text-2xl">support_agent</span>
+            <div>
+                <p class="font-bold text-sm">Support</p>
+                <p class="text-xs text-secondary-text">Raise a ticket</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- Recent Orders -->
+    <h2 class="text-xl font-black mb-4">Recent Orders</h2>
+    <div id="recentOrdersList" class="space-y-3 mb-8">
+        <div class="text-center py-8 text-secondary-text">Loading...</div>
+    </div>
+
+</main>
+
+<!-- Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center pb-6 pt-3 px-4 bg-white border-t border-outline z-50">
+    <a href="dash.html" class="flex flex-col items-center text-secondary-text">
+        <span class="material-symbols-outlined text-xl">explore</span>
+        <span class="text-[10px] font-bold mt-1 uppercase">Explore</span>
+    </a>
+    <a href="orders.html" class="flex flex-col items-center text-secondary-text">
+        <span class="material-symbols-outlined text-xl">receipt_long</span>
+        <span class="text-[10px] font-bold mt-1 uppercase">Orders</span>
+    </a>
+    <a href="user.html" class="flex flex-col items-center text-primary">
+        <span class="material-symbols-outlined filled text-xl">person</span>
+        <span class="text-[10px] font-bold mt-1 uppercase">Account</span>
+    </a>
+</nav>
+
+<script>
+const API = 'http://127.0.0.1:5000';
+if (localStorage.getItem('darkMode') === '1') document.getElementById('htmlRoot').classList.add('dark');
+
+const role = localStorage.getItem('user_role');
+if (!role || !['student','faculty'].includes(role)) window.location.href = 'login.html';
+
+const userId = localStorage.getItem('user_id');
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+document.getElementById('profileName').textContent = localStorage.getItem('user_name') || '—';
+document.getElementById('profileRole').textContent = localStorage.getItem('user_role') || '—';
+
+async function fetchStats() {
+    try {
+        const res = await fetch(`${API}/student/stats/${userId}`);
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('statTotal').textContent = data.data.total_orders;
+            document.getElementById('statCompleted').textContent = data.data.completed_orders;
+            document.getElementById('statActive').textContent = data.data.active_orders;
+            document.getElementById('statSpent').textContent = `₹${Math.round(data.data.total_spent).toLocaleString('en-IN')}`;
+        }
+    } catch {}
+}
+
+async function fetchRecentOrders() {
+    try {
+        const res = await fetch(`${API}/orders/${userId}`);
+        const data = await res.json();
+        const list = document.getElementById('recentOrdersList');
+
+        if (!data.success || !data.data.length) {
+            list.innerHTML = `<div class="text-center py-10 text-secondary-text border-2 border-dashed border-outline rounded-2xl">No orders yet. Start ordering!</div>`;
+            return;
+        }
+
+        const statusColor = {
+            pending: 'bg-orange-100 text-orange-600',
+            accepted: 'bg-blue-100 text-blue-600',
+            preparing: 'bg-yellow-100 text-yellow-700',
+            ready: 'bg-purple-100 text-purple-600',
+            completed: 'bg-green-100 text-green-700',
+            rejected: 'bg-red-100 text-red-600'
+        };
+
+        // Show only first 5 recent
+        list.innerHTML = data.data.slice(0, 5).map(o => `
+        <div class="bg-white border border-outline rounded-2xl p-5 border-l-4 border-l-primary cursor-pointer hover:shadow-sm transition-shadow"
+            onclick="window.location.href='order_tracking.html?id=${o.order_id}'">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs font-black text-secondary-text">#${o.order_id}</span>
+                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${statusColor[o.status] || 'bg-gray-100 text-gray-500'}">${o.status}</span>
+                    </div>
+                    <h4 class="font-bold">${o.restaurant_name}</h4>
+                    <p class="text-xs text-secondary-text mt-0.5">${new Date(o.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-black text-primary text-lg">₹${parseFloat(o.total_price).toFixed(0)}</p>
+                    <p class="text-xs text-secondary-text flex items-center gap-1 justify-end mt-1">
+                        Track <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                    </p>
+                </div>
+            </div>
+        </div>`).join('');
+
+        if (data.data.length > 5) {
+            list.innerHTML += `<a href="orders.html" class="block text-center text-primary font-bold text-sm py-3 hover:underline">View all ${data.data.length} orders →</a>`;
+        }
+    } catch {}
+}
+
+fetchStats();
+fetchRecentOrders();
+</script>
+</body>
+</html>

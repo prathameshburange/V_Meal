@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | V Meal</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FC8019",
+                        "primary-dark": "#984800",
+                        "background": "#f9f9f9",
+                        "surface": "#ffffff",
+                        "surface-low": "#f3f3f4",
+                        "surface-container": "#eeeeee",
+                        "on-surface": "#1a1c1c",
+                        "outline": "#E9E9EB",
+                        "secondary-text": "#686B78",
+                        "success": "#60B246",
+                        "error-red": "#D83C3C",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .kinetic-gradient { background: linear-gradient(135deg, #984800 0%, #FC8019 100%); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+
+<body class="bg-surface-low text-on-surface">
+
+    <!-- HEADER -->
+    <header class="fixed top-0 w-full bg-white border-b border-outline z-50">
+        <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+            <img src="1766987781692.png" class="h-8" alt="V Meal"/>
+            <div class="flex gap-6 text-sm">
+                <a href="aboutus.html" class="text-secondary-text hover:text-primary transition-colors">About Us</a>
+                <a href="login.html" class="text-primary font-semibold">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="min-h-screen flex items-center justify-center pt-24 pb-10 px-4">
+        <div class="w-full max-w-md bg-white rounded-2xl p-8 shadow-sm border border-outline">
+
+            <div class="text-center mb-8">
+                <img src="1766987781692.png" class="h-12 mx-auto mb-4" alt="V Meal"/>
+                <h2 class="text-2xl font-bold">Join V Meal</h2>
+                <p class="text-secondary-text text-sm mt-1">Create an account to start ordering</p>
+            </div>
+
+            <form id="signupForm" class="space-y-4">
+
+                <div>
+                    <input id="name" type="text" placeholder="Full Name" required
+                        class="w-full p-3 border border-outline rounded-xl bg-surface-low focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"/>
+                    <p class="text-error-red text-xs mt-1 hidden" id="nameErr"></p>
+                </div>
+
+                <div>
+                    <input id="email" type="email" placeholder="VIT Email (e.g. name@vitstudent.ac.in)" required
+                        class="w-full p-3 border border-outline rounded-xl bg-surface-low focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"/>
+                    <p class="text-xs text-secondary-text mt-1">Only @vitstudent.ac.in or @vit.ac.in</p>
+                    <p class="text-error-red text-xs mt-1 hidden" id="emailErr"></p>
+                </div>
+
+                <div>
+                    <input id="phone" type="tel" placeholder="Phone Number (optional)"
+                        class="w-full p-3 border border-outline rounded-xl bg-surface-low focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"/>
+                </div>
+
+                <div class="relative">
+                    <input id="password" type="password" placeholder="Password (min 6 chars)" required
+                        class="w-full p-3 pr-10 border border-outline rounded-xl bg-surface-low focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"/>
+                    <button type="button" id="togglePwd"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-text">
+                        <span class="material-symbols-outlined text-xl">visibility</span>
+                    </button>
+                    <p class="text-error-red text-xs mt-1 hidden" id="passwordErr"></p>
+                </div>
+
+                <div>
+                    <input id="confirmPassword" type="password" placeholder="Confirm Password" required
+                        class="w-full p-3 border border-outline rounded-xl bg-surface-low focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"/>
+                    <p class="text-error-red text-xs mt-1 hidden" id="confirmErr"></p>
+                </div>
+
+                <button type="submit"
+                    class="w-full kinetic-gradient text-white font-bold p-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-md">
+                    Create Account
+                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                </button>
+
+            </form>
+
+            <p class="text-center mt-6 text-sm text-secondary-text">
+                Already have an account?
+                <a href="login.html" class="text-primary font-semibold hover:underline">Sign in</a>
+            </p>
+
+            <p class="text-center mt-4 text-[10px] uppercase tracking-widest text-secondary-text/50 font-bold">
+                © 2026 VMeal. Crafted with care for campus cravings.
+            </p>
+        </div>
+    </main>
+
+    <script>
+        const API = "http://127.0.0.1:5000";
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.vmeal-toast');
+            if (existing) existing.remove();
+            const colors = { success: '#60B246', error: '#D83C3C', info: '#FC8019' };
+            const toast = document.createElement('div');
+            toast.className = 'vmeal-toast';
+            toast.textContent = message;
+            toast.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]||colors.info};color:white;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:99999;opacity:1;transition:opacity 0.4s;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,0.15);font-family:'Inter',sans-serif;`;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; }, 2600);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        // Toggle password
+        document.getElementById('togglePwd').addEventListener('click', () => {
+            const pwd = document.getElementById('password');
+            const icon = document.querySelector('#togglePwd span');
+            pwd.type = pwd.type === 'password' ? 'text' : 'password';
+            icon.textContent = pwd.type === 'password' ? 'visibility' : 'visibility_off';
+        });
+
+        function showErr(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
+
+        function clearErrs() {
+            ['nameErr','emailErr','passwordErr','confirmErr'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.textContent = ''; el.classList.add('hidden'); }
+            });
+        }
+
+        // Submit form
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrs();
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            let valid = true;
+            if (!name) { showErr('nameErr', 'Name is required'); valid = false; }
+            if (!email.endsWith('@vitstudent.ac.in') && !email.endsWith('@vit.ac.in')) {
+                showErr('emailErr', 'Only @vitstudent.ac.in or @vit.ac.in allowed'); valid = false;
+            }
+            if (password.length < 6) { showErr('passwordErr', 'Min 6 characters'); valid = false; }
+            if (password !== confirm) { showErr('confirmErr', 'Passwords do not match'); valid = false; }
+            if (!valid) return;
+
+            try {
+                const res = await fetch(`${API}/register`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, password, phone })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast("Account created! Please sign in.", "success");
+                    setTimeout(() => { window.location.href = "login.html"; }, 2000);
+                } else {
+                    showToast(data.message || "Signup failed", "error");
+                }
+
+            } catch (err) {
+                console.error(err);
+                showToast("Cannot reach server. Is Flask running?", "error");
+            }
+        });
+    </script>
+
+</body>
+</html>
