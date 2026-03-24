@@ -74,14 +74,10 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB upload limit
 port = int(os.environ.get("PORT", 5000))
 app.run(host="0.0.0.0", port=port)
 
-# -------------------------------
-# CORS (FIXED VERSION ✅)
-# -------------------------------
-CORS(app)
 
-# -------------------------------
-# REGISTER ROUTES ✅
-# -------------------------------
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(restaurant_bp)
