@@ -52,7 +52,8 @@
 #     app.run(debug=True, port=5000)
 
 import os
-print("RUNNING FROM:", os.getcwd())
+
+
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 from config import UPLOAD_FOLDER, SECRET_KEY
@@ -70,6 +71,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB upload limit
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
 
 # -------------------------------
 # CORS (FIXED VERSION ✅)
