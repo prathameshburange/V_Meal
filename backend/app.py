@@ -53,7 +53,6 @@
 
 import os
 
-
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 from config import UPLOAD_FOLDER, SECRET_KEY
@@ -70,23 +69,18 @@ app = Flask(__name__)
 # -------------------------------
 app.config['SECRET_KEY'] = SECRET_KEY
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB upload limit
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
-
+# ✅ APPLY CORS HERE (IMPORTANT)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-
+# -------------------------------
+# REGISTER ROUTES
+# -------------------------------
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(restaurant_bp)
 app.register_blueprint(student_bp)
-
-# -------------------------------
-# DEBUG (AFTER REGISTERING)
-# -------------------------------
-print(app.url_map)
 
 # -------------------------------
 # SERVE UPLOADED IMAGES
@@ -103,11 +97,11 @@ def home():
     return "V Meal backend running"
 
 # -------------------------------
-# RUN SERVER
+# RUN SERVER (ONLY HERE)
 # -------------------------------
 if __name__ == '__main__':
-    # Create upload folders if not exist
     os.makedirs(os.path.join(UPLOAD_FOLDER, 'restaurants'), exist_ok=True)
     os.makedirs(os.path.join(UPLOAD_FOLDER, 'dishes'), exist_ok=True)
 
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
