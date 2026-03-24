@@ -1,4 +1,4 @@
-const API = 'http://127.0.0.1:5000';
+const API = 'https://v-meal.onrender.com';
 
 function showToast(message, type = 'info') {
     const existing = document.querySelector('.vmeal-toast');
