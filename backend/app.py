@@ -63,7 +63,11 @@ from routes.restaurant_routes import restaurant_bp
 from routes.student_routes import student_bp
 
 app = Flask(__name__)
-
+DB_HOST = os.environ.get("MYSQLHOST")
+DB_USER = os.environ.get("MYSQLUSER")
+DB_PASSWORD = os.environ.get("MYSQLPASSWORD")
+DB_NAME = os.environ.get("MYSQLDATABASE")
+DB_PORT = int(os.environ.get("MYSQLPORT", 3306))
 # -------------------------------
 # CONFIG
 # -------------------------------
